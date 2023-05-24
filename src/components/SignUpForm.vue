@@ -9,17 +9,17 @@
                         lazy-validation
                     >
                         <v-text-field
-                            v-model="firstName"
-                            :counter="10"
-                            :rules="nameRules"
-                            label="Prénom"
-                            required
-                        ></v-text-field>
-                        <v-text-field
                             v-model="lastName"
                             :counter="10"
                             :rules="nameRules"
                             label="Nom"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="firstName"
+                            :counter="10"
+                            :rules="nameRules"
+                            label="Prénom"
                             required
                         ></v-text-field>
 
@@ -32,6 +32,7 @@
                         <!-- mot de passe -->
                         <v-text-field
                             v-model="password"
+                            type="password"
                             :rules="passwordRules"
                             label="Mot de passe"
                             required
@@ -50,16 +51,8 @@
                             required
                         ></v-text-field>
 
-                        <v-checkbox
-                            v-model="checkbox"
-                            :rules="[(v) => !!v || 'You must agree to continue!']"
-                            label="Do you agree?"
-                            required
-                        ></v-checkbox>
-
                         <v-btn
                             :disabled="!valid"
-                            
                             class="mr-4"
                             @click="validate"
                         >
@@ -67,7 +60,6 @@
                         </v-btn>
 
                         <v-btn
-                            
                             class="mr-4"
                             @click="reset"
                         >
@@ -88,7 +80,10 @@
             jobRules: [(v) => !!v || 'Job is required', (v) => (v && v.length <= 10) || 'Job must be less than 10 characters'],
             emailRules: [(v) => !!v || 'E-mail is required', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
             numberRules: [(v) => !!v || 'Number is required', (v) => (v && v.length <= 10) || 'Number must be less than 10 characters'],
-            passwordRules: [(v) => !!v || 'Password is required', (v) => (v && v.length <= 10) || 'Password must be less than 10 characters'],
+            passwordRules: [
+                (v) => !!v || 'Password is required',
+                (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
+            ],
             email: '',
             checkbox: false,
             firstName: '',
