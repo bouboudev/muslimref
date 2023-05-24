@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
+
 const firebaseConfig = {
     apiKey: 'AIzaSyBJLx7gMCXp86_83fGOZrC90uxB5pscIQM',
     authDomain: 'muslimref-ff738.firebaseapp.com',
@@ -13,6 +14,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+//authentification
 const auth = getAuth(app);
 
-export { auth };
+//database
+import { getFirestore } from 'firebase/firestore';
+const db = getFirestore(app);
+
+
+
+export { auth, db };
