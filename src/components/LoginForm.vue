@@ -8,6 +8,7 @@
                         ref="form"
                         v-model="valid"
                         lazy-validation
+                        autocomplete="off"
                     >
                         <v-card-title>
                             <h1 class="display-1">Se connecter</h1>
@@ -15,18 +16,20 @@
 
                         <v-text-field
                             v-model="email"
+                            autocomplete="off"
                             :rules="emailRules"
                             label="E-mail"
                             required
                         ></v-text-field>
                         <v-text-field
                             v-model="password"
+                            autocomplete="off"
                             type="password"
                             :rules="passwordRules"
                             label="Mot de passe"
                             required
                         ></v-text-field>
-
+                        <div>Je n'ai pas de compte, je veux <router-link to="/signup">m'inscrire</router-link></div>
                         <v-btn
                             type="submit"
                             :disabled="!valid"
@@ -55,7 +58,6 @@
             email: '',
             password: '',
         }),
-
         methods: {
             async validate() {
                 try {

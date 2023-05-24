@@ -40,6 +40,15 @@ const routes = [
             requiresAuth: true,
         },
     },
+    //profil
+    {
+        path: '/profil',
+        name: 'profil',
+        component: () => import(/* webpackChunkName: "about" */ '../views/ProfilView.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ];
 
 const router = new VueRouter({
@@ -66,9 +75,15 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isAuthenticated = auth.currentUser;
+  console.log("isAuthenticated", auth.currentUser);
   if (requiresAuth && !isAuthenticated) {
     next("login");
-  } else {
+  } 
+  if(isAuthenticated && to.name == 'login'){
+    console.log("Vous êtes déjà connecté");
+    next("/");
+  }
+  else{
     next();
   }
 });

@@ -5,23 +5,29 @@
             color="secondary"
             dark
         >
-            <!-- logo -->
-            <v-img
-                src="./assets/logo.png"
-                max-height="40"
-                max-width="40"
-                class="mr-2"
-            ></v-img>
-            <div>
+            <div class="mr-6">
                 <h1>MuslimRef</h1>
             </div>
 
             <div v-if="isLogin"><router-link to="/">Accueil</router-link> | <router-link to="/about">à propos</router-link> |</div>
             <v-spacer></v-spacer>
+
+            <v-btn
+                text
+                @click="goTo('profil')"
+            >
+                <span class="mr-2">Mon profil</span>
+                <v-icon>mdi-account</v-icon>
+            </v-btn>
+            <v-divider
+                class="mx-4"
+                inset
+                vertical
+            ></v-divider>
             <div v-if="!isLogin">
                 <v-btn
                     text
-                    @click="goTo('login')"
+                    @click="goTo('signin')"
                 >
                     <span class="mr-2">Se connecter</span>
                     <v-icon>mdi-account</v-icon>
@@ -36,18 +42,6 @@
                     <v-icon>mdi-logout</v-icon>
                 </v-btn>
             </div>
-            <v-divider
-                class="mx-4"
-                inset
-                vertical
-            ></v-divider>
-            <v-btn
-                text
-                @click="goTo('signup')"
-            >
-                <span class="mr-2">S'inscrire</span>
-                <v-icon>mdi-account-plus</v-icon>
-            </v-btn>
         </v-app-bar>
 
         <v-main>
@@ -72,7 +66,7 @@
         methods: {
             goTo(route) {
                 if (route === this.$route.name) return;
-                this.$router.replace({ name: route });
+                this.$router.push({ name: route });
             },
             setupFirebase() {
                 auth.onAuthStateChanged((user) => {

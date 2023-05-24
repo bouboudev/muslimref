@@ -31,6 +31,7 @@
                         <v-text-field
                             v-model="email"
                             :rules="emailRules"
+                            autocomplete="off"
                             label="E-mail"
                             required
                         ></v-text-field>
@@ -39,6 +40,7 @@
                             v-model="password"
                             type="password"
                             :rules="passwordRules"
+                            autocomplete="off"
                             label="Mot de passe"
                             required
                         ></v-text-field>
@@ -63,7 +65,6 @@
                         >
                             S'inscrire
                         </v-btn>
-
                         <v-btn
                             class="mr-4"
                             @click="reset"
