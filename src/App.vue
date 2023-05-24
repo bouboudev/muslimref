@@ -5,14 +5,20 @@
             color="primary"
             dark
         >
-            <div class="d-flex align-center">MuslimREF</div>
+            <div class="d-flex align-center"></div>
+            <v-btn
+                text
+                @click="goTo('/')"
+            >
+                <span class="mr-2">MuslimREF</span>
+            </v-btn>
 
             <v-spacer></v-spacer>
 
-            <v-btn text
-            @click="goTo('signin')"
+            <v-btn
+                text
+                @click="goTo('signin')"
             >
-              
                 <span class="mr-2">Se connecter</span>
                 <v-icon>mdi-account</v-icon>
             </v-btn>
