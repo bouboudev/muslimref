@@ -2,27 +2,40 @@
     <v-app>
         <v-app-bar
             app
-            color="primary"
+            color="secondary"
             dark
         >
-            <div class="d-flex align-center"></div>
-            <v-btn
-                text
-                @click="goTo('/')"
-            >
-                <span class="mr-2">MuslimREF</span>
-            </v-btn>
+            <!-- logo -->
+            <v-img
+                src="./assets/logo.png"
+                max-height="40"
+                max-width="40"
+                class="mr-2"
+            ></v-img>
+            <div>
+                <h1>MuslimRef</h1>
+            </div>
 
+            <div v-if="isLogin"><router-link to="/">Accueil</router-link> | <router-link to="/about">à propos</router-link> |</div>
             <v-spacer></v-spacer>
-
-            <v-btn
-                text
-                @click="goTo('signin')"
-            >
-                <span class="mr-2">Se connecter</span>
-                <v-icon>mdi-account</v-icon>
-            </v-btn>
-            <!-- séparation ligne -->
+            <div v-if="!isLogin">
+                <v-btn
+                    text
+                    @click="goTo('login')"
+                >
+                    <span class="mr-2">Se connecter</span>
+                    <v-icon>mdi-account</v-icon>
+                </v-btn>
+            </div>
+            <div v-else>
+                <v-btn
+                    text
+                    @click="signOut"
+                >
+                    <span class="mr-2">Se déconnecter</span>
+                    <v-icon>mdi-logout</v-icon>
+                </v-btn>
+            </div>
             <v-divider
                 class="mx-4"
                 inset
@@ -44,15 +57,36 @@
 </template>
 
 <script>
+    import { auth } from './firebase';
+    import 'firebase/auth';
     export default {
         name: 'App',
 
         data: () => ({
+            isLogin: false,
             //
         }),
+        mounted() {
+            this.setupFirebase();
+        },
         methods: {
             goTo(route) {
-                this.$router.push({ name: route });
+                if (route === this.$route.name) return;
+                this.$router.replace({ name: route });
+            },
+            setupFirebase() {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.isLogin = true;
+                    } else {
+                        this.isLogin = false;
+                    }
+                });
+            },
+            signOut() {
+                auth.signOut().then(() => {
+                    this.$router.replace({ name: 'login' });
+                });
             },
         },
     };

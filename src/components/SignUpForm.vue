@@ -4,11 +4,16 @@
             <v-col>
                 <v-card>
                     <v-form
+                        @submit.prevent="validate"
                         ref="form"
                         v-model="valid"
                         lazy-validation
                     >
-                        <v-text-field
+                    <!-- title -->
+                    <v-card-title>
+                        <h1 class="display-1">S'inscrire</h1>
+                    </v-card-title>
+                        <!-- <v-text-field
                             v-model="lastName"
                             :counter="10"
                             :rules="nameRules"
@@ -21,7 +26,7 @@
                             :rules="nameRules"
                             label="Prénom"
                             required
-                        ></v-text-field>
+                        ></v-text-field> -->
 
                         <v-text-field
                             v-model="email"
@@ -38,7 +43,7 @@
                             required
                         ></v-text-field>
 
-                        <v-text-field
+                        <!-- <v-text-field
                             v-model="job"
                             :rules="jobRules"
                             label="Metier ou commerce"
@@ -49,14 +54,14 @@
                             :rules="numberRules"
                             label="Numéro de téléphone"
                             required
-                        ></v-text-field>
+                        ></v-text-field> -->
 
                         <v-btn
+                            type="submit"
                             :disabled="!valid"
                             class="mr-4"
-                            @click="validate"
                         >
-                            Validate
+                            S'inscrire
                         </v-btn>
 
                         <v-btn
@@ -73,6 +78,8 @@
 </template>
 
 <script>
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
     export default {
         data: () => ({
             valid: true,
@@ -85,16 +92,22 @@
                 (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
             ],
             email: '',
-            checkbox: false,
+            password: '',
             firstName: '',
             lastName: '',
             job: '',
             number: '',
-            password: '',
         }),
 
         methods: {
-            validate() {
+            async validate() {
+                try {
+                    const user = await createUserWithEmailAndPassword(auth, this.email, this.password);
+                    this.reset();
+                    console.log(user);
+                } catch (error) {
+                    console.log(error);
+                }
                 this.$refs.form.validate();
             },
             reset() {
