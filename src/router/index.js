@@ -1,10 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import SignUpView from '../views/SignUpView.vue';
-import LoginView from '../views/LoginView.vue';
-import { auth } from '../firebase'
-
+import { getAuth } from 'firebase/auth';
 
 Vue.use(VueRouter);
 
@@ -12,7 +8,7 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomeView,
+        component: () => import('@/views/HomeView.vue'),
         meta: {
             requiresAuth: true,
         },
@@ -21,20 +17,19 @@ const routes = [
     {
         path: '/signup',
         name: 'signup',
-        component: SignUpView,
+        component: () => import('@/views/SignUpView.vue'),
+        meta: {hideNavigation: true},
     },
     //page sign in
     {
         path: '/login',
         name: 'login',
-        component: LoginView,
+        component: () => import('@/views/LoginView.vue'),
+        meta: {hideNavigation: true},
     },
     {
         path: '/about',
         name: 'about',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
         meta: {
             requiresAuth: true,
@@ -57,35 +52,21 @@ const router = new VueRouter({
     routes,
 });
 
+router.beforeEach(async (to, from, next) => {
+    const auth = getAuth();
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    const currentUser = auth.currentUser;
+    console.log('requiresAuth',requiresAuth);
+    console.log('currentUser',currentUser);
 
-// router.beforeEach((to, from, next) => {
-//   const authenticatedUser = auth.currentUser;
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  
-//   if ( requiresAuth && ! authenticatedUser ) {
-//       alert("Vous devez être connecté pour accéder à cette page");
-//       next("signin");
-//   }
-//   else {
-//       next();
-//   }
-// });
-
-
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = auth.currentUser;
-  console.log("isAuthenticated", auth.currentUser);
-  if (requiresAuth && !isAuthenticated) {
-    next("login");
-  } 
-  if(isAuthenticated && to.name == 'login'){
-    console.log("Vous êtes déjà connecté");
-    next("/");
-  }
-  else{
-    next();
-  }
+    if (requiresAuth && !currentUser) {
+        next('/login');
+    } else if (requiresAuth && currentUser) {
+        next();
+    } else {
+        next();
+    }
 });
+
 
 export default router;

@@ -1,6 +1,7 @@
 <template>
     <v-app>
         <v-app-bar
+            v-if="!$route.meta.hideNavigation"
             app
             color="secondary"
             dark
@@ -9,7 +10,7 @@
                 <h1>MuslimRef</h1>
             </div>
 
-            <div v-if="isLogin"><router-link to="/">Accueil</router-link> | <router-link to="/about">à propos</router-link> |</div>
+            <div><router-link to="/">Accueil</router-link> | <router-link to="/about">à propos</router-link> |</div>
             <v-spacer></v-spacer>
 
             <v-btn
@@ -24,16 +25,7 @@
                 inset
                 vertical
             ></v-divider>
-            <div v-if="!isLogin">
-                <v-btn
-                    text
-                    @click="goTo('signin')"
-                >
-                    <span class="mr-2">Se connecter</span>
-                    <v-icon>mdi-account</v-icon>
-                </v-btn>
-            </div>
-            <div v-else>
+            <div>
                 <v-btn
                     text
                     @click="signOut"
@@ -57,25 +49,13 @@
         name: 'App',
 
         data: () => ({
-            isLogin: false,
             //
         }),
-        mounted() {
-            this.setupFirebase();
-        },
+        mounted() {},
         methods: {
             goTo(route) {
                 if (route === this.$route.name) return;
                 this.$router.push({ name: route });
-            },
-            setupFirebase() {
-                auth.onAuthStateChanged((user) => {
-                    if (user) {
-                        this.isLogin = true;
-                    } else {
-                        this.isLogin = false;
-                    }
-                });
             },
             signOut() {
                 auth.signOut().then(() => {
@@ -83,5 +63,9 @@
                 });
             },
         },
+        computed: {
+            //
+        },
+        watch: {},
     };
 </script>

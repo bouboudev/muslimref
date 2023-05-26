@@ -61,9 +61,11 @@
         methods: {
             async validate() {
                 try {
-                    const user = await signInWithEmailAndPassword(auth, this.email, this.password);
+                    await signInWithEmailAndPassword(auth, this.email, this.password);
+                    const currentUser = auth.currentUser;
+                    console.log('after login currentUser :', currentUser);
                     this.reset();
-                    console.log('login user', user);
+
                     this.$router.push({ name: 'home' });
                 } catch (error) {
                     console.log(error);
@@ -73,6 +75,7 @@
             reset() {
                 this.$refs.form.reset();
             },
+            
         },
     };
 </script>
