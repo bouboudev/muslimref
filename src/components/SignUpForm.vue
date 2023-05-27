@@ -1,18 +1,26 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col>
-                <v-card>
+    <v-container fluid>
+        <v-row
+            justify="center"
+            align="center"
+            style="height: 100vh"
+        >
+            <v-col
+                cols="12"
+                sm="8"
+                md="6"
+            >
+                <v-card class="pa-8">
                     <v-form
                         @submit.prevent="validate"
                         ref="form"
                         v-model="valid"
                         lazy-validation
                     >
-                    <!-- title -->
-                    <v-card-title>
-                        <h1 class="display-1">S'inscrire</h1>
-                    </v-card-title>
+                        <!-- title -->
+                        <v-card-title>
+                            <h1 class="display-1">S'inscrire</h1>
+                        </v-card-title>
                         <!-- <v-text-field
                             v-model="lastName"
                             :counter="10"
@@ -44,6 +52,15 @@
                             label="Mot de passe"
                             required
                         ></v-text-field>
+                        <v-text-field
+                            v-model="confirmPassword"
+                            type="password"
+                            :rules="passwordRules"
+                            autocomplete="off"
+                            label="Confirmer le mot de passe"
+                            required
+                        ></v-text-field>
+                        <div class="py-4">J'ai déjà un compte, je veux <router-link to="/login">me connecter.</router-link></div>
 
                         <!-- <v-text-field
                             v-model="job"
@@ -65,12 +82,6 @@
                         >
                             S'inscrire
                         </v-btn>
-                        <v-btn
-                            class="mr-4"
-                            @click="reset"
-                        >
-                            Reset Form
-                        </v-btn>
                     </v-form>
                 </v-card>
             </v-col>
@@ -79,8 +90,8 @@
 </template>
 
 <script>
-import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+    import { auth } from '../firebase';
+    import { createUserWithEmailAndPassword } from 'firebase/auth';
     export default {
         data: () => ({
             valid: true,
@@ -103,6 +114,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
         methods: {
             async validate() {
                 try {
+                    if(this.password !== this.confirmPassword) throw new Error('Les mots de passe ne correspondent pas');
                     const user = await createUserWithEmailAndPassword(auth, this.email, this.password);
                     this.reset();
                     console.log(user);

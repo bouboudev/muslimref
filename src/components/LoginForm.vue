@@ -1,14 +1,21 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col>
-                <v-card>
+    <v-container fluid>
+        <v-row
+            justify="center"
+            align="center"
+            style="height: 100vh"
+        >
+            <v-col
+                cols="12"
+                sm="8"
+                md="6"
+            >
+                <v-card class="pa-8">
                     <v-form
                         @submit.prevent="validate"
                         ref="form"
                         v-model="valid"
                         lazy-validation
-                        autocomplete="off"
                     >
                         <v-card-title>
                             <h1 class="display-1">Se connecter</h1>
@@ -16,20 +23,18 @@
 
                         <v-text-field
                             v-model="email"
-                            autocomplete="off"
                             :rules="emailRules"
                             label="E-mail"
                             required
                         ></v-text-field>
                         <v-text-field
                             v-model="password"
-                            autocomplete="off"
                             type="password"
                             :rules="passwordRules"
                             label="Mot de passe"
                             required
                         ></v-text-field>
-                        <div>Je n'ai pas de compte, je veux <router-link to="/signup">m'inscrire</router-link></div>
+                        <div class="py-4">Je n'ai pas de compte, je veux <router-link to="/signup">m'inscrire.</router-link></div>
                         <v-btn
                             type="submit"
                             :disabled="!valid"
@@ -75,7 +80,6 @@
             reset() {
                 this.$refs.form.reset();
             },
-            
         },
     };
 </script>
