@@ -18,14 +18,14 @@ const routes = [
         path: '/signup',
         name: 'signup',
         component: () => import('@/views/SignUpView.vue'),
-        meta: {hideNavigation: true},
+        meta: { hideNavigation: true },
     },
     //page sign in
     {
         path: '/login',
         name: 'login',
         component: () => import('@/views/LoginView.vue'),
-        meta: {hideNavigation: true},
+        meta: { hideNavigation: true },
     },
     {
         path: '/about',
@@ -52,21 +52,19 @@ const router = new VueRouter({
     routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
     const auth = getAuth();
-    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-    const currentUser = auth.currentUser;
-    console.log('requiresAuth',requiresAuth);
-    console.log('currentUser',currentUser);
-
-    if (requiresAuth && !currentUser) {
-        next('/login');
-    } else if (requiresAuth && currentUser) {
-        next();
-    } else {
-        next();
+    if (to.path === '/login' && auth.currentUser) {
+        next('/');
+        return;
     }
-});
 
+    if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
+        next('/login');
+        return;
+    }
+
+    next();
+});
 
 export default router;

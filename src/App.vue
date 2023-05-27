@@ -10,7 +10,20 @@
                 <h1>MuslimRef</h1>
             </div>
 
-            <div><router-link to="/">Accueil</router-link> | <router-link to="/about">à propos</router-link> |</div>
+            <div>
+                <router-link
+                    :class="{ 'active-link': $route.path === '/' }"
+                    to="/"
+                    >Accueil</router-link
+                >
+                |
+                <router-link
+                    :class="{ 'active-link': $route.path === '/about' }"
+                    to="/about"
+                    >à propos</router-link
+                >
+                |
+            </div>
             <v-spacer></v-spacer>
 
             <v-btn
@@ -51,7 +64,10 @@
         data: () => ({
             //
         }),
-        mounted() {},
+        beforeMount() {
+
+            this.$store.dispatch('fetchUser')
+        },
         methods: {
             goTo(route) {
                 if (route === this.$route.name) return;
@@ -69,3 +85,11 @@
         watch: {},
     };
 </script>
+<style scoped>
+    .active-link {
+        color: #ffffff !important;
+    }
+    .routerLinkInactive {
+        color: #000000 !important;
+    }
+</style>

@@ -22,13 +22,13 @@
                         </v-card-title>
 
                         <v-text-field
-                            v-model="email"
+                            v-model="login_form.email"
                             :rules="emailRules"
                             label="E-mail"
                             required
                         ></v-text-field>
                         <v-text-field
-                            v-model="password"
+                            v-model="login_form.password"
                             type="password"
                             :rules="passwordRules"
                             label="Mot de passe"
@@ -50,8 +50,9 @@
 </template>
 
 <script>
-    import { auth } from '../firebase';
-    import { signInWithEmailAndPassword } from 'firebase/auth';
+    import { mapActions } from 'vuex';
+    // import { auth } from '../firebase';
+    // import { signInWithEmailAndPassword } from 'firebase/auth';
     export default {
         data: () => ({
             valid: true,
@@ -60,22 +61,33 @@
                 (v) => !!v || 'Password is required',
                 (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
             ],
-            email: '',
-            password: '',
+            login_form: {
+                email: '',
+                password: '',
+            },
         }),
-        methods: {
-            async validate() {
-                try {
-                    await signInWithEmailAndPassword(auth, this.email, this.password);
-                    const currentUser = auth.currentUser;
-                    console.log('after login currentUser :', currentUser);
-                    this.reset();
 
-                    this.$router.push({ name: 'home' });
-                } catch (error) {
+        methods: {
+            ...mapActions(['setUser']),
+            // async validate() {
+            //     try {
+            //         await signInWithEmailAndPassword(auth, this.email, this.password);
+            //         const currentUser = auth.currentUser;
+            //         this.setUser(currentUser);
+            //         console.log('after login currentUser :', currentUser);
+            //         this.reset();
+
+            //         this.$router.push({ name: 'home' });
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            //     this.$refs.form.validate();
+            // },
+
+            validate() {
+                this.$store.dispatch('login', this.login_form).catch((error) => {
                     console.log(error);
-                }
-                this.$refs.form.validate();
+                });
             },
             reset() {
                 this.$refs.form.reset();
