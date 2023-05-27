@@ -37,7 +37,7 @@
                         ></v-text-field> -->
 
                         <v-text-field
-                            v-model="email"
+                            v-model="register_form.email"
                             :rules="emailRules"
                             autocomplete="off"
                             label="E-mail"
@@ -45,7 +45,7 @@
                         ></v-text-field>
                         <!-- mot de passe -->
                         <v-text-field
-                            v-model="password"
+                            v-model="register_form.password"
                             type="password"
                             :rules="passwordRules"
                             autocomplete="off"
@@ -60,6 +60,7 @@
                             label="Confirmer le mot de passe"
                             required
                         ></v-text-field>
+                        {{passwordMatch}}
                         <div class="py-4">J'ai déjà un compte, je veux <router-link to="/login">me connecter.</router-link></div>
 
                         <!-- <v-text-field
@@ -90,8 +91,8 @@
 </template>
 
 <script>
-    import { auth } from '../firebase';
-    import { createUserWithEmailAndPassword } from 'firebase/auth';
+    // import { auth } from '../firebase';
+    // import { createUserWithEmailAndPassword } from 'firebase/auth';
     export default {
         data: () => ({
             valid: true,
@@ -103,28 +104,30 @@
                 (v) => !!v || 'Password is required',
                 (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
             ],
-            email: '',
-            password: '',
             firstName: '',
             lastName: '',
             job: '',
             number: '',
+            register_form: {
+                email: '',
+                password: '', 
+            },
+            confirmPassword: '',
         }),
 
         methods: {
             async validate() {
-                try {
-                    if(this.password !== this.confirmPassword) throw new Error('Les mots de passe ne correspondent pas');
-                    const user = await createUserWithEmailAndPassword(auth, this.email, this.password);
-                    this.reset();
-                    console.log(user);
-                } catch (error) {
+                this.$store.dispatch('register', this.register_form).catch((error) => {
                     console.log(error);
-                }
-                this.$refs.form.validate();
+                });
             },
             reset() {
                 this.$refs.form.reset();
+            },
+        },
+        computed: {
+            passwordMatch() {
+                return this.register_form.password === this.confirmPassword;
             },
         },
     };
