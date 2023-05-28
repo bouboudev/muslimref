@@ -28,7 +28,7 @@
                         :disabled="cardIsDisabled"
                     >
                         <v-card-text>
-                            <v-flex class="mb-4"> Mon profile d'utilisateur </v-flex>
+                            <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
                             <!-- icon to disabled the card -->
                             <v-text-field
                                 v-model="objet.firstName"
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapActions } from 'vuex';
     export default {
         data() {
             return {
@@ -79,6 +79,7 @@
             //console user
         },
         methods: {
+            ...mapActions(['fetchUser']),
             checkCurrentUser() {
                 if (this.$store.state.user) {
                     this.currentUser = this.$store.state.user;
@@ -90,6 +91,7 @@
             },
             addInformationsSheet() {
                 this.$store.dispatch('addInformationSheet', this.objet);
+
             },
             initProfile() {
                 this.objet.firstName = this.user.userFirstName;

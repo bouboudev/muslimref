@@ -46,21 +46,22 @@
                         <!-- mot de passe -->
                         <v-text-field
                             v-model="register_form.password"
-                            type="password"
                             :rules="passwordRules"
-                            autocomplete="off"
+                            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                            :type="show1 ? 'text' : 'password'"
+                            @click:append="show1 = !show1"
                             label="Mot de passe"
                             required
                         ></v-text-field>
                         <v-text-field
                             v-model="confirmPassword"
-                            type="password"
-                            :rules="passwordRules"
-                            autocomplete="off"
+                            :rules="confirmPasswordRules"
+                            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                            :type="show1 ? 'text' : 'password'"
+                            @click:append="show1 = !show1"
                             label="Confirmer le mot de passe"
                             required
                         ></v-text-field>
-                        {{passwordMatch}}
                         <div class="py-4">J'ai déjà un compte, je veux <router-link to="/login">me connecter.</router-link></div>
 
                         <!-- <v-text-field
@@ -78,7 +79,7 @@
 
                         <v-btn
                             type="submit"
-                            :disabled="!valid"
+                            :disabled="!formIsValid"
                             class="mr-4"
                         >
                             S'inscrire
@@ -96,13 +97,14 @@
     export default {
         data: () => ({
             valid: true,
+            show1: false,
             nameRules: [(v) => !!v || 'Name is required', (v) => (v && v.length <= 10) || 'Name must be less than 10 characters'],
             jobRules: [(v) => !!v || 'Job is required', (v) => (v && v.length <= 10) || 'Job must be less than 10 characters'],
-            emailRules: [(v) => !!v || 'E-mail is required', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
+            emailRules: [(v) => !!v || 'E-mail is required', (v) => /.+@.+\..+/.test(v) || 'Votre email doit être valide'],
             numberRules: [(v) => !!v || 'Number is required', (v) => (v && v.length <= 10) || 'Number must be less than 10 characters'],
             passwordRules: [
-                (v) => !!v || 'Password is required',
-                (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
+                (v) => !!v || 'Votre mot de passe est requis',
+                (v) => (v && v.length <= 10) || 'Votre mot de passe doit contenir moins de 10 caractères',
             ],
             firstName: '',
             lastName: '',
@@ -110,16 +112,17 @@
             number: '',
             register_form: {
                 email: '',
-                password: '', 
+                password: '',
             },
             confirmPassword: '',
         }),
 
         methods: {
             async validate() {
-                this.$store.dispatch('register', this.register_form).catch((error) => {
-                    console.log(error);
-                });
+                if (this.valid)
+                    this.$store.dispatch('register', this.register_form).catch((error) => {
+                        console.log(error);
+                    });
             },
             reset() {
                 this.$refs.form.reset();
@@ -128,6 +131,16 @@
         computed: {
             passwordMatch() {
                 return this.register_form.password === this.confirmPassword;
+            },
+            formIsValid() {
+                return this.register_form.email && this.register_form.password && this.passwordMatch;
+            },
+            confirmPasswordRules() {
+                return [
+                    (v) => !!v || 'Password confirmation is required',
+                    (v) => v === this.register_form.password || 'Password does not match',
+                    (v) => (v && v.length <= 10) || 'Password must be less than 10 characters',
+                ];
             },
         },
     };

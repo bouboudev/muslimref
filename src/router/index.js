@@ -52,6 +52,8 @@ const router = new VueRouter({
     routes,
 });
 
+
+// AVANT
 router.beforeEach((to, from, next) => {
     const auth = getAuth();
     if (to.path === '/login' && auth.currentUser) {
@@ -66,5 +68,27 @@ router.beforeEach((to, from, next) => {
 
     next();
 });
+
+// router.beforeEach((to, from, next) => {
+//     if (to.path === from.path) {
+//       // La navigation est redondante, donc tu peux simplement retourner
+//       return;
+//     }
+  
+//     const auth = getAuth();
+//     if (to.path === '/login' && auth.currentUser) {
+//       next('/');
+//       return;
+//     }
+  
+//     if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
+//       next('/login');
+//       return;
+//     }
+  
+//     next();
+//   });
+  
+
 
 export default router;
