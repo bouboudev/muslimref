@@ -65,8 +65,8 @@
             //
         }),
         beforeMount() {
-
-            this.$store.dispatch('fetchUser')
+            //fetch user to check if user is logged in
+            this.$store.dispatch('fetchUser');
         },
         methods: {
             goTo(route) {

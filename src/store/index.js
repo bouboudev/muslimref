@@ -2,9 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import router from '../router';
-import { auth } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -23,7 +23,7 @@ export default new Vuex.Store({
     actions: {
         async login({ commit }, details) {
             const { email, password } = details;
-            console.log('router : ', router)
+            console.log('router : ', router);
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -93,6 +93,9 @@ export default new Vuex.Store({
                 } else {
                     commit('SET_USER', user);
 
+                    // call getInformationSheet to get the user's information sheet
+                    this.dispatch('getInformationSheet', user.uid);
+
                     // if (router.isReady() && router.currentRoute.value.path === '/login') {
                     //     router.push('/');
                     // }
@@ -101,6 +104,46 @@ export default new Vuex.Store({
                     }
                 }
             });
+        },
+        updateProfileStore({ commit }, details) {
+            const { displayName } = details;
+            const user = auth.currentUser;
+            if (user) {
+                updateProfile(auth.currentUser, {
+                    displayName,
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+
+            commit('SET_USER', auth.currentUser);
+        },
+        async addInformationSheet({ commit }, details) {
+            // Add a new document in collection "cities"
+            await setDoc(doc(db, 'informationsSheet', auth.currentUser.uid), {
+                userId: auth.currentUser.uid,
+                userFirstName: details.firstName,
+                userLastName: details.lastName,
+            })
+                .then((docRef) => {
+                    console.log('Fiche de renseignement ajoutée avec succès', docRef);
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de l'ajout de la fiche de renseignement", error);
+                });
+            commit('SET_USER', auth.currentUser);
+        },
+        async getInformationSheet({ commit }) {
+            const docRef = doc(db, 'informationsSheet', auth.currentUser.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                console.log('Document data:', docSnap.data());
+                commit('SET_USER', auth.currentUser);
+            } else {
+                // doc.data() will be undefined in this case
+                console.log('No such document!');
+            }
         },
     },
     modules: {},
