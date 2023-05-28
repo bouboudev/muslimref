@@ -33,46 +33,27 @@
                     <v-card-text>
                         <v-flex class="mb-4"> </v-flex>
                         <v-text-field
-                            v-model="currentUser.displayName"
-                            label="displayname"
-                        ></v-text-field>
-                         <v-text-field
                             v-model="objet.firstName"
                             label="firstname"
                         ></v-text-field>
-                         <v-text-field
+                        <v-text-field
                             v-model="objet.lastName"
                             label="lastname"
                         ></v-text-field>
                         <v-text-field
-                            v-model="form.lastName"
-                            label="Last Name"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="currentUser.email"
+                            v-model="user.email"
                             label="Adresse email"
                         ></v-text-field>
                     </v-card-text>
                     <v-card-actions>
                         <v-btn
                             color="primary"
-                            :loading="loading"
                             @click="addInformationsSheet()"
                         >
                             <!-- icon save -->
                             <v-icon left>mdi-content-save</v-icon>
 
                             Enregistrer les changements
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            :loading="loading"
-                            @click="getInformationSheet()"
-                        >
-                            <!-- icon save -->
-                            <v-icon left>mdi-content-save</v-icon>
-
-                            getInformationSheet
                         </v-btn>
                     </v-card-actions>
                 </v-card>
@@ -82,28 +63,20 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
     export default {
         data() {
             return {
-                currentUser: {
-                    displayName: '',
-                },
-                objet:{
+                objet: {
                     firstName: '',
                     lastName: '',
                 },
-                form: {
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    contactEmail: 'john@doe.com',
-                    avatar: 'MALE_CAUCASIAN_BLOND_BEARD',
-                },
-                showAvatarPicker: false,
-                loading: false,
             };
         },
         mounted() {
+            this.initProfile();
             this.checkCurrentUser();
+            //console user
         },
         methods: {
             checkCurrentUser() {
@@ -116,10 +89,18 @@
                 this.$store.dispatch('updateProfileStore', this.currentUser.displayName);
             },
             addInformationsSheet() {
+                
                 this.$store.dispatch('addInformationSheet', this.objet);
             },
-            getInformationSheet() {
-                this.$store.dispatch('getInformationSheet', this.currentUser.uid);
+            initProfile() {
+                this.objet.firstName = this.user.userFirstName;
+                this.objet.lastName = this.user.userLastName;
+            },
+        },
+        computed: {
+            ...mapState(['user']),
+            user() {
+                return this.$store.state.user;
             },
         },
     };

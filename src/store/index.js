@@ -95,6 +95,7 @@ export default new Vuex.Store({
 
                     // call getInformationSheet to get the user's information sheet
                     this.dispatch('getInformationSheet', user.uid);
+                    // add informations on the user's profile
 
                     // if (router.isReady() && router.currentRoute.value.path === '/login') {
                     //     router.push('/');
@@ -138,8 +139,14 @@ export default new Vuex.Store({
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                console.log('Document data:', docSnap.data());
-                commit('SET_USER', auth.currentUser);
+              //si la fiche de renseignement existe, on la récupère et on la met dans le store
+                const userUpdated = {
+                  ...auth.currentUser,
+                  ...docSnap.data(),
+                };
+                commit('SET_USER', userUpdated);
+                console.log('Document data:', userUpdated);
+
             } else {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');
