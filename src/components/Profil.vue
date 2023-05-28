@@ -1,23 +1,4 @@
 <template>
-    <!-- <v-container fluid>
-        <v-row
-            justify="center"
-            align="center"
-            style="height: 100vh"
-        >
-            <v-col
-                cols="12"
-                sm="8"
-                md="6"
-            >
-                <v-card class="pa-8"> 
-              {{currentUser}}
-                    
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container> -->
-
     <v-container fluid>
         <v-row
             justify="center"
@@ -29,34 +10,52 @@
                 sm="8"
                 md="6"
             >
-                <v-card>
-                    <v-card-text>
-                        <v-flex class="mb-4"> </v-flex>
-                        <v-text-field
-                            v-model="objet.firstName"
-                            label="firstname"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="objet.lastName"
-                            label="lastname"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="user.email"
-                            label="Adresse email"
-                        ></v-text-field>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                            color="primary"
-                            @click="addInformationsSheet()"
-                        >
-                            <!-- icon save -->
-                            <v-icon left>mdi-content-save</v-icon>
+                
+                <v-card-actions class="justify-end">
 
-                            Enregistrer les changements
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+                    <v-icon
+                    icon
+                    class="gray--text"
+                    @click="toggleCard()"
+                    >
+                        mdi-pencil
+                    </v-icon>
+                </v-card-actions>
+                    
+
+                    <v-card
+                        class="pa-8"
+                        :disabled="cardIsDisabled"
+                    >
+                        <v-card-text>
+                            <v-flex class="mb-4"> Mon profile d'utilisateur </v-flex>
+                            <!-- icon to disabled the card -->
+                            <v-text-field
+                                v-model="objet.firstName"
+                                label="Prénom"
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="objet.lastName"
+                                label="Nom"
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="user.email"
+                                label="Adresse email"
+                            ></v-text-field>
+                        </v-card-text>
+                        <v-card-actions class="justify-center">
+                            <v-btn
+                                color="primary"
+                                @click="addInformationsSheet()"
+                            >
+                                <!-- icon save -->
+                                <v-icon left>mdi-content-save</v-icon>
+
+                                Enregistrer
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                
             </v-col>
         </v-row>
     </v-container>
@@ -71,6 +70,7 @@
                     firstName: '',
                     lastName: '',
                 },
+                cardIsDisabled: true,
             };
         },
         mounted() {
@@ -89,12 +89,14 @@
                 this.$store.dispatch('updateProfileStore', this.currentUser.displayName);
             },
             addInformationsSheet() {
-                
                 this.$store.dispatch('addInformationSheet', this.objet);
             },
             initProfile() {
                 this.objet.firstName = this.user.userFirstName;
                 this.objet.lastName = this.user.userLastName;
+            },
+            toggleCard() {
+                this.cardIsDisabled = !this.cardIsDisabled;
             },
         },
         computed: {
@@ -106,4 +108,6 @@
     };
 </script>
 
-<style></style>
+<style scoped>
+</style>
+
