@@ -10,52 +10,62 @@
                 sm="8"
                 md="6"
             >
-                
-                <v-card-actions class="justify-end">
+                <v-alert
+                    v-if="!objet.profilCompleted"
+                    dense
+                    type="info"
+                >
+                    Vous devez valider votre profil pour figurer dans la liste des utilisateurs.
+                </v-alert>
 
+                <v-card-actions class="justify-end">
                     <v-icon
-                    icon
-                    class="gray--text"
-                    @click="toggleCard()"
+                        icon
+                        class="gray--text"
+                        @click="toggleCard()"
                     >
                         mdi-pencil
                     </v-icon>
                 </v-card-actions>
-                    
 
-                    <v-card
-                        class="pa-8"
-                        :disabled="cardIsDisabled"
-                    >
-                        <v-card-text>
-                            <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
-                            <!-- icon to disabled the card -->
-                            <v-text-field
-                                v-model="objet.firstName"
-                                label="Prénom"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="objet.lastName"
-                                label="Nom"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="user.email"
-                                label="Adresse email"
-                            ></v-text-field>
-                        </v-card-text>
-                        <v-card-actions class="justify-center">
-                            <v-btn
-                                color="primary"
-                                @click="addInformationsSheet()"
-                            >
-                                <!-- icon save -->
-                                <v-icon left>mdi-content-save</v-icon>
+                <v-card
+                    class="pa-8"
+                    :disabled="cardIsDisabled"
+                >
+                    <v-card-text>
+                        <v-icon class="d-flex justify-end" v-if="objet.profilCompleted"> mdi-check-circle </v-icon>
+                        <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
+                        <!-- icon to disabled the card -->
+                        <v-text-field
+                            v-model="objet.firstName"
+                            label="Prénom"
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="objet.lastName"
+                            label="Nom"
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="objet.job"
+                            label="Métier"
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="user.email"
+                            label="Adresse email"
+                        ></v-text-field>
+                    </v-card-text>
 
-                                Enregistrer
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                
+                    <v-card-actions class="justify-center">
+                        <v-btn
+                            color="primary"
+                            @click="addInformationsSheet()"
+                        >
+                            <!-- icon save -->
+                            <v-icon left>mdi-content-save</v-icon>
+
+                            Enregistrer
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-col>
         </v-row>
     </v-container>
@@ -72,6 +82,7 @@
                     profilCompleted: false,
                 },
                 cardIsDisabled: true,
+                currentUser: null,
             };
         },
         beforeMount() {
@@ -98,6 +109,8 @@
             initProfile() {
                 this.objet.firstName = this.user.userFirstName;
                 this.objet.lastName = this.user.userLastName;
+                this.objet.profilCompleted = this.user.profilCompleted;
+                this.objet.job = this.user.userJob;
             },
             toggleCard() {
                 this.cardIsDisabled = !this.cardIsDisabled;
@@ -112,6 +125,4 @@
     };
 </script>
 
-<style scoped>
-</style>
-
+<style scoped></style>

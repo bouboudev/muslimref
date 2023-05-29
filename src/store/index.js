@@ -127,6 +127,7 @@ export default new Vuex.Store({
                 userLastName: details.lastName,
                 userMail : details.email,
                 profilCompleted: details.profilCompleted,
+                userJob: details.job,
             })
                 .then((docRef) => {
                     console.log('Fiche de renseignement ajoutée avec succès', docRef);

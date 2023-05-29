@@ -29,7 +29,7 @@ import { mapState } from 'vuex';
                     { text: 'prenom', value: 'userFirstName' },
                     { text: 'email', value: 'userMail' },
                     { text: 'Profil Validé ?', value: 'profilCompleted' },
-                    // { text: 'metier', value: 'metier' },
+                    { text: 'metier', value: 'userJob' },
                     // { text: 'entreprise', value: 'entreprise' },
 
 
