@@ -62,24 +62,25 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex';
+    import { mapState } from 'vuex';
     export default {
         data() {
             return {
                 objet: {
                     firstName: '',
                     lastName: '',
+                    profilCompleted: false,
                 },
                 cardIsDisabled: true,
             };
         },
-        mounted() {
+        beforeMount() {
             this.initProfile();
+        },
+        mounted() {
             this.checkCurrentUser();
-            //console user
         },
         methods: {
-            ...mapActions(['fetchUser']),
             checkCurrentUser() {
                 if (this.$store.state.user) {
                     this.currentUser = this.$store.state.user;
@@ -90,8 +91,9 @@
                 this.$store.dispatch('updateProfileStore', this.currentUser.displayName);
             },
             addInformationsSheet() {
+                this.objet.email = this.currentUser.email;
+                this.objet.profilCompleted = true;
                 this.$store.dispatch('addInformationSheet', this.objet);
-
             },
             initProfile() {
                 this.objet.firstName = this.user.userFirstName;

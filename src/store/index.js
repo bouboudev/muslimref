@@ -125,6 +125,8 @@ export default new Vuex.Store({
                 userId: auth.currentUser.uid,
                 userFirstName: details.firstName,
                 userLastName: details.lastName,
+                userMail : details.email,
+                profilCompleted: details.profilCompleted,
             })
                 .then((docRef) => {
                     console.log('Fiche de renseignement ajoutée avec succès', docRef);

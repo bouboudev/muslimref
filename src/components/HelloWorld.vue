@@ -8,7 +8,7 @@
                 md="10">
                 <v-data-table
                     :headers="headers"
-                    :items="items"
+                    :items="users"
                     :items-per-page="5"
                     class="elevation-1"
                 ></v-data-table>
@@ -20,30 +20,50 @@
 <script>
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
+import { mapState } from 'vuex';
     export default {
         data() {
             return {
                 headers: [
-                    { text: 'nom', value: 'nom' },
-                    { text: 'prenom', value: 'prenom' },
-                    { text: 'email', value: 'mail' },
-                    { text: 'metier', value: 'metier' },
-                    { text: 'entreprise', value: 'entreprise' },
+                    { text: 'nom', value: 'userLastName' },
+                    { text: 'prenom', value: 'userFirstName' },
+                    { text: 'email', value: 'userMail' },
+                    { text: 'Profil Validé ?', value: 'profilCompleted' },
+                    // { text: 'metier', value: 'metier' },
+                    // { text: 'entreprise', value: 'entreprise' },
+
 
                 ],
                 items: [],
+                users:[]
+                
             };
         },
         mounted() {
             this.getFirestoreCollection();
+            
+            
         },
         methods: {
             async getFirestoreCollection() {
-                const querySnapshot = await getDocs(collection(db, 'test'));
+                const querySnapshot = await getDocs(collection(db, 'informationsSheet'));
                 querySnapshot.forEach((doc) => {
                     this.items.push(doc.data());
                 });
+                this.checkProfilIsCompleted();
             },
+            checkProfilIsCompleted() {
+                this.items.forEach((item) => {
+                    if ( item.profilCompleted) {
+                        this.users.push(item);
+                        console.log('user :',item);
+                    }
+                });
+            },
+        },
+        computed: {
+            ...mapState(['user']),
+            //
         },
     };
 </script>
