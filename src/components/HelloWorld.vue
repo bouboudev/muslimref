@@ -25,11 +25,11 @@ import { mapState } from 'vuex';
         data() {
             return {
                 headers: [
-                    { text: 'nom', value: 'userLastName' },
-                    { text: 'prenom', value: 'userFirstName' },
-                    { text: 'email', value: 'userMail' },
+                    { text: 'nom', value: 'lastName' },
+                    { text: 'prenom', value: 'firstName' },
+                    { text: 'email', value: 'email' },
+                    { text: 'metier', value: 'job' },
                     { text: 'Profil Validé ?', value: 'profilCompleted' },
-                    { text: 'metier', value: 'userJob' },
                     // { text: 'entreprise', value: 'entreprise' },
 
 
@@ -56,7 +56,7 @@ import { mapState } from 'vuex';
                 this.items.forEach((item) => {
                     if ( item.profilCompleted) {
                         this.users.push(item);
-                        console.log('user :',item);
+                       
                     }
                 });
             },

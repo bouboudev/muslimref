@@ -27,45 +27,68 @@
                         mdi-pencil
                     </v-icon>
                 </v-card-actions>
-
-                <v-card
-                    class="pa-8"
-                    :disabled="cardIsDisabled"
+                <v-form
+                    @submit.prevent="addInformationsSheet()"
+                    ref="form"
+                    v-model="valid"
+                    lazy-validation
                 >
-                    <v-card-text>
-                        <v-icon class="d-flex justify-end" v-if="objet.profilCompleted"> mdi-check-circle </v-icon>
-                        <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
-                        <!-- icon to disabled the card -->
-                        <v-text-field
-                            v-model="objet.firstName"
-                            label="Prénom"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="objet.lastName"
-                            label="Nom"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="objet.job"
-                            label="Métier"
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="user.email"
-                            label="Adresse email"
-                        ></v-text-field>
-                    </v-card-text>
+                    <v-card
+                        class="pa-8"
+                        :disabled="cardIsDisabled"
+                    >
+                        <v-card-text>
+                            <v-icon
+                                class="success--text d-flex justify-end"
+                                v-if="objet.profilCompleted"
+                            >
+                                mdi-check-circle
+                            </v-icon>
+                            <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
+                            <!-- icon to disabled the card -->
+                            <v-text-field
+                                v-model="objet.firstName"
+                                label="Prénom"
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="objet.lastName"
+                                label="Nom"
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="objet.job"
+                                label="Métier"
+                            ></v-text-field>
+                            <v-text-field
+                                v-model="user.email"
+                                label="Adresse email"
+                            ></v-text-field>
+                        </v-card-text>
 
-                    <v-card-actions class="justify-center">
-                        <v-btn
-                            color="primary"
-                            @click="addInformationsSheet()"
-                        >
-                            <!-- icon save -->
-                            <v-icon left>mdi-content-save</v-icon>
+                        <v-card-actions class="justify-center">
+                            <v-btn
+                                color="primary"
+                                type="submit"
+                                :disabled="!formIsValid"
+                            >
+                                <!-- icon save -->
+                                <v-icon left>mdi-content-save</v-icon>
 
-                            Enregistrer
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
+                                Enregistrer
+                            </v-btn>
+                            <v-btn
+                                v-if="!objet.profilCompleted"
+                                color="success"
+                                @click="validateMyProfil()"
+                                :disabled="!formIsValid"
+                            >
+                                <!-- icon save -->
+                                <v-icon left>mdi-content-save</v-icon>
+
+                                Valider son profil
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-form>
             </v-col>
         </v-row>
     </v-container>
@@ -76,33 +99,34 @@
     export default {
         data() {
             return {
-                objet: {
-                    firstName: '',
-                    lastName: '',
-                    profilCompleted: false,
-                },
+                valid: true,
+                objet: {},
                 cardIsDisabled: true,
                 currentUser: null,
             };
         },
         beforeMount() {
-            this.initProfile();
+            // this.initProfile();
         },
         mounted() {
+            console.log('this.$store.state.user', this.$store.state.user);
             this.checkCurrentUser();
+            
         },
         methods: {
             checkCurrentUser() {
                 if (this.$store.state.user) {
                     this.currentUser = this.$store.state.user;
-                    console.log(this.currentUser);
+                    this.objet = this.currentUser;
+                    console.log('current user profil: ', this.currentUser);
                 }
-            },
-            updateProfileComponent() {
-                this.$store.dispatch('updateProfileStore', this.currentUser.displayName);
             },
             addInformationsSheet() {
                 this.objet.email = this.currentUser.email;
+                this.objet.profilCompleted = true;
+                this.$store.dispatch('addInformationSheet', this.objet);
+            },
+            validateMyProfil() {
                 this.objet.profilCompleted = true;
                 this.$store.dispatch('addInformationSheet', this.objet);
             },
@@ -110,7 +134,9 @@
                 this.objet.firstName = this.user.userFirstName;
                 this.objet.lastName = this.user.userLastName;
                 this.objet.profilCompleted = this.user.profilCompleted;
+                this.objet.email = this.user.email;
                 this.objet.job = this.user.userJob;
+                //getInformationSheet
             },
             toggleCard() {
                 this.cardIsDisabled = !this.cardIsDisabled;
@@ -120,6 +146,9 @@
             ...mapState(['user']),
             user() {
                 return this.$store.state.user;
+            },
+            formIsValid() {
+                return this.objet.firstName && this.objet.lastName && this.objet.job && this.objet.email;
             },
         },
     };

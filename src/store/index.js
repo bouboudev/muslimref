@@ -15,15 +15,20 @@ export default new Vuex.Store({
         SET_USER(state, user) {
             state.user = user;
         },
+        GET_USER(state, user) {
+            state.user = user;
+        },
 
         CLEAR_USER(state) {
             state.user = null;
+        },
+        console(state) {
+            console.log(' console du store :', state.user)
         },
     },
     actions: {
         async login({ commit }, details) {
             const { email, password } = details;
-            console.log('router : ', router);
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -42,7 +47,7 @@ export default new Vuex.Store({
                 return;
             }
 
-            commit('SET_USER', auth.currentUser);
+            commit('console', details);
 
             router.push('/');
         },
@@ -52,6 +57,8 @@ export default new Vuex.Store({
 
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
+                // create a new document in the collection firebase
+                this.dispatch('addInformationSheet', details);
             } catch (error) {
                 switch (error.code) {
                     case 'auth/email-already-in-use':
@@ -73,7 +80,8 @@ export default new Vuex.Store({
                 return;
             }
 
-            commit('SET_USER', auth.currentUser);
+            commit('SET_USER', details);
+            console.log('details', details);
 
             router.push('/');
         },
@@ -91,7 +99,9 @@ export default new Vuex.Store({
                 if (user === null) {
                     commit('CLEAR_USER');
                 } else {
-                    commit('SET_USER', user);
+
+
+                    commit('GET_USER', user);
 
                     // call getInformationSheet to get the user's information sheet
                     this.dispatch('getInformationSheet', user.uid);
@@ -122,12 +132,12 @@ export default new Vuex.Store({
         async addInformationSheet({ commit }, details) {
             // Add a new document in collection "cities"
             await setDoc(doc(db, 'informationsSheet', auth.currentUser.uid), {
-                userId: auth.currentUser.uid,
-                userFirstName: details.firstName,
-                userLastName: details.lastName,
-                userMail : details.email,
-                profilCompleted: details.profilCompleted,
-                userJob: details.job,
+                id: auth.currentUser.uid,
+                firstName: details.firstName,
+                lastName: details.lastName,
+                email : details.email,
+                job: details.job,
+                profilCompleted: details.profilCompleted ? details.profilCompleted : false,
             })
                 .then((docRef) => {
                     console.log('Fiche de renseignement ajoutée avec succès', docRef);
@@ -135,7 +145,7 @@ export default new Vuex.Store({
                 .catch((error) => {
                     console.error("Erreur lors de l'ajout de la fiche de renseignement", error);
                 });
-            commit('SET_USER', auth.currentUser);
+            commit('SET_USER', details);
         },
         async getInformationSheet({ commit }) {
             const docRef = doc(db, 'informationsSheet', auth.currentUser.uid);
@@ -148,8 +158,6 @@ export default new Vuex.Store({
                   ...docSnap.data(),
                 };
                 commit('SET_USER', userUpdated);
-                console.log('Document data:', userUpdated);
-
             } else {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');

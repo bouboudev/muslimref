@@ -21,26 +21,37 @@
                         <v-card-title>
                             <h1 class="display-1">S'inscrire</h1>
                         </v-card-title>
-                        <!-- <v-text-field
-                            v-model="lastName"
+                        <v-text-field
+                            v-model="register_form.lastName"
                             :counter="10"
                             :rules="nameRules"
                             label="Nom"
                             required
                         ></v-text-field>
                         <v-text-field
-                            v-model="firstName"
+                            v-model="register_form.firstName"
                             :counter="10"
                             :rules="nameRules"
                             label="Prénom"
                             required
-                        ></v-text-field> -->
-
+                        ></v-text-field>
                         <v-text-field
                             v-model="register_form.email"
                             :rules="emailRules"
                             autocomplete="off"
                             label="E-mail"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="register_form.job"
+                            :rules="jobRules"
+                            label="Metier ou commerce"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="register_form.number"
+                            :rules="numberRules"
+                            label="Numéro de téléphone"
                             required
                         ></v-text-field>
                         <!-- mot de passe -->
@@ -63,20 +74,6 @@
                             required
                         ></v-text-field>
                         <div class="py-4">J'ai déjà un compte, je veux <router-link to="/login">me connecter.</router-link></div>
-
-                        <!-- <v-text-field
-                            v-model="job"
-                            :rules="jobRules"
-                            label="Metier ou commerce"
-                            required
-                        ></v-text-field>
-                        <v-text-field
-                            v-model="number"
-                            :rules="numberRules"
-                            label="Numéro de téléphone"
-                            required
-                        ></v-text-field> -->
-
                         <v-btn
                             type="submit"
                             :disabled="!formIsValid"
@@ -111,6 +108,10 @@
             job: '',
             number: '',
             register_form: {
+                firstName: '',
+                lastName: '',
+                job: '',
+                number: '',
                 email: '',
                 password: '',
             },
@@ -133,7 +134,7 @@
                 return this.register_form.password === this.confirmPassword;
             },
             formIsValid() {
-                return this.register_form.email && this.register_form.password && this.passwordMatch;
+                return this.register_form.email && this.register_form.password && this.passwordMatch 
             },
             confirmPasswordRules() {
                 return [
