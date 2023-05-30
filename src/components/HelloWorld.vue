@@ -1,17 +1,36 @@
 <template>
     <v-container fluid>
-        <v-row    justify="center"
+        <v-row
+            justify="center"
             align="center"
-            style="height: 100vh">
-            <v-col cols="12"
+            style="height: 100vh"
+        >
+            <v-col
+                cols="12"
                 sm="8"
-                md="10">
-                <v-data-table
-                    :headers="headers"
-                    :items="users"
-                    :items-per-page="5"
-                    class="elevation-1"
-                ></v-data-table>
+                md="10"
+            >
+                <v-card>
+                    <v-card-title>
+                        Muslim
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="search"
+                            append-icon="mdi-magnify"
+                            label="Rechercher"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                        :headers="headers"
+                        :items="users"
+                        :items-per-page="5"
+                        class="elevation-1"
+                        :search="search"
+                    >
+                    </v-data-table>
+                </v-card>
             </v-col>
         </v-row>
     </v-container>
@@ -20,7 +39,7 @@
 <script>
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
-import { mapState } from 'vuex';
+    import { mapState } from 'vuex';
     export default {
         data() {
             return {
@@ -31,17 +50,14 @@ import { mapState } from 'vuex';
                     { text: 'metier', value: 'job' },
                     { text: 'Profil Validé ?', value: 'profilCompleted' },
                     // { text: 'entreprise', value: 'entreprise' },
-
-
                 ],
                 items: [],
-                users:[]
-                
+                users: [],
+                search: '',
             };
         },
         mounted() {
             this.getFirestoreCollection();
-            
             
         },
         methods: {
@@ -54,9 +70,8 @@ import { mapState } from 'vuex';
             },
             checkProfilIsCompleted() {
                 this.items.forEach((item) => {
-                    if ( item.profilCompleted) {
+                    if (item.profilCompleted) {
                         this.users.push(item);
-                       
                     }
                 });
             },
@@ -69,6 +84,4 @@ import { mapState } from 'vuex';
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>
+<style scoped></style>

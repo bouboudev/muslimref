@@ -15,10 +15,6 @@ export default new Vuex.Store({
         SET_USER(state, user) {
             state.user = user;
         },
-        GET_USER(state, user) {
-            state.user = user;
-        },
-
         CLEAR_USER(state) {
             state.user = null;
         },
@@ -94,23 +90,23 @@ export default new Vuex.Store({
             router.push('/login');
         },
 
-        fetchUser({ commit }) {
+        async fetchUser({ commit }) {
             auth.onAuthStateChanged(async (user) => {
                 if (user === null) {
                     commit('CLEAR_USER');
                 } else {
-
-
-                    commit('GET_USER', user);
-
-                    // call getInformationSheet to get the user's information sheet
-                    this.dispatch('getInformationSheet', user.uid);
+                  // call getInformationSheet to get the user's information sheet
+                 await this.dispatch('getInformationSheet', user.uid);
+                  console.log('user fetchUser :', user)
+                  // commit('SET_USER', user);
                     // add informations on the user's profile
 
                     // if (router.isReady() && router.currentRoute.value.path === '/login') {
                     //     router.push('/');
                     // }
+                    // si j'actualise une page qui n'est pas le login, je reste sur la page
                     if (router.currentRoute.path === '/login') {
+                      console.log('je pousse vers le home')
                         router.push('/');
                     }
                 }
@@ -147,8 +143,9 @@ export default new Vuex.Store({
                 });
             commit('SET_USER', details);
         },
-        async getInformationSheet({ commit }) {
-            const docRef = doc(db, 'informationsSheet', auth.currentUser.uid);
+        async getInformationSheet({ commit } , uid) {
+          
+            const docRef = doc(db, 'informationsSheet', uid);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
@@ -158,6 +155,8 @@ export default new Vuex.Store({
                   ...docSnap.data(),
                 };
                 commit('SET_USER', userUpdated);
+                console.log('getInformationSheet :', userUpdated);
+
             } else {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');

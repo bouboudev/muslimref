@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import { getAuth } from 'firebase/auth';
+// import { getAuth } from 'firebase/auth';
 
 Vue.use(VueRouter);
 
@@ -54,20 +54,20 @@ const router = new VueRouter({
 
 
 // AVANT
-router.beforeEach((to, from, next) => {
-    const auth = getAuth();
-    if (to.path === '/login' && auth.currentUser) {
-        next('/');
-        return;
-    }
+// router.beforeEach((to, from, next) => {
+//     const auth = getAuth();
+//     if (to.path === '/login' && auth.currentUser) {
+//         next('/');
+//         return;
+//     }
 
-    if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
-        next('/login');
-        return;
-    }
+//     if (to.matched.some((record) => record.meta.requiresAuth) && !auth.currentUser) {
+//         next('/login');
+//         return;
+//     }
 
-    next();
-});
+//     next();
+// });
 
 // router.beforeEach((to, from, next) => {
 //     if (to.path === from.path) {
@@ -88,6 +88,7 @@ router.beforeEach((to, from, next) => {
   
 //     next();
 //   });
+
   
 
 

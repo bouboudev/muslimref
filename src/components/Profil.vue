@@ -1,5 +1,8 @@
 <template>
-    <v-container fluid>
+    <v-container
+        fluid
+        v-show="isMounted"
+    >
         <v-row
             justify="center"
             align="center"
@@ -11,7 +14,7 @@
                 md="6"
             >
                 <v-alert
-                    v-if="!objet.profilCompleted"
+                    v-if="!user.profilCompleted"
                     dense
                     type="info"
                 >
@@ -40,22 +43,22 @@
                         <v-card-text>
                             <v-icon
                                 class="success--text d-flex justify-end"
-                                v-if="objet.profilCompleted"
+                                v-if="user.profilCompleted"
                             >
                                 mdi-check-circle
                             </v-icon>
                             <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
                             <!-- icon to disabled the card -->
                             <v-text-field
-                                v-model="objet.firstName"
+                                v-model="user.firstName"
                                 label="Prénom"
                             ></v-text-field>
                             <v-text-field
-                                v-model="objet.lastName"
+                                v-model="user.lastName"
                                 label="Nom"
                             ></v-text-field>
                             <v-text-field
-                                v-model="objet.job"
+                                v-model="user.job"
                                 label="Métier"
                             ></v-text-field>
                             <v-text-field
@@ -76,7 +79,7 @@
                                 Enregistrer
                             </v-btn>
                             <v-btn
-                                v-if="!objet.profilCompleted"
+                                v-if="!user.profilCompleted"
                                 color="success"
                                 @click="validateMyProfil()"
                                 :disabled="!formIsValid"
@@ -103,23 +106,29 @@
                 objet: {},
                 cardIsDisabled: true,
                 currentUser: null,
+                isMounted: true,
             };
-        },
-        beforeMount() {
-            // this.initProfile();
         },
         mounted() {
             console.log('this.$store.state.user', this.$store.state.user);
-            this.checkCurrentUser();
+            //pause de 2 seconde
+
+                // this.checkCurrentUser();
             
+ 
         },
         methods: {
             checkCurrentUser() {
                 if (this.$store.state.user) {
+                    // getInformationSheet
                     this.currentUser = this.$store.state.user;
                     this.objet = this.currentUser;
                     console.log('current user profil: ', this.currentUser);
                 }
+            },
+            getInformationSheet() {
+                console.log('getInformationSheet', this.$store.state.user);
+                this.$store.dispatch('getInformationSheet', this.$store.state.user.id);
             },
             addInformationsSheet() {
                 this.objet.email = this.currentUser.email;
@@ -127,16 +136,10 @@
                 this.$store.dispatch('addInformationSheet', this.objet);
             },
             validateMyProfil() {
+                this.objet = this.$store.state.user;
                 this.objet.profilCompleted = true;
                 this.$store.dispatch('addInformationSheet', this.objet);
-            },
-            initProfile() {
-                this.objet.firstName = this.user.userFirstName;
-                this.objet.lastName = this.user.userLastName;
-                this.objet.profilCompleted = this.user.profilCompleted;
-                this.objet.email = this.user.email;
-                this.objet.job = this.user.userJob;
-                //getInformationSheet
+                this.toggleCard();
             },
             toggleCard() {
                 this.cardIsDisabled = !this.cardIsDisabled;
@@ -148,8 +151,12 @@
                 return this.$store.state.user;
             },
             formIsValid() {
-                return this.objet.firstName && this.objet.lastName && this.objet.job && this.objet.email;
+                return this.user.firstName && this.user.lastName && this.user.job && this.user.email;
             },
+        },
+             beforeRouteLeave(to, from, next) {
+            this.isMounted = false;
+            next();
         },
     };
 </script>
