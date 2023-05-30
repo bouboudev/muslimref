@@ -9,20 +9,39 @@
             <h1>MuslimRef</h1>
         </div>
 
-        <div>
+        <!-- <v-toolbar-title 
+        class="mx-2"
+        >
             <router-link
                 :class="{ 'active-link': $route.path === '/' }"
                 to="/"
                 >Accueil</router-link
             >
-            |
+        </v-toolbar-title>
+        <v-toolbar-title
+        class="mx-2"
+        >
             <router-link
                 :class="{ 'active-link': $route.path === '/about' }"
                 to="/about"
                 >à propos</router-link
             >
-            |
-        </div>
+        </v-toolbar-title> -->
+
+        <v-toolbar-title 
+        v-for=" route in routes"
+        :key="route.path"
+        class="mx-2"
+        color="red"
+        >
+            <router-link
+                :class="{ 'active-link': $route.path === route.path }"
+                :to="route.path"
+                >{{route.name}}</router-link
+            >
+        </v-toolbar-title>
+        
+
         <v-spacer></v-spacer>
 
         <!-- <v-btn
@@ -46,9 +65,7 @@
                 <v-icon>mdi-logout</v-icon>
             </v-btn> -->
 
-            <v-list-item
-                @click="goTo('profil')"
-            >
+            <v-list-item @click="goTo('profil')">
                 <!-- avat -->
                 <v-list-item-avatar>
                     <v-img
@@ -78,10 +95,12 @@
 
         data: () => ({
             imageUrl: 'https://oasys.ch/wp-content/uploads/2019/03/photo-avatar-profil.png',
+           
+            
 
             //
         }),
-    
+
         methods: {
             goTo(route) {
                 if (route === this.$route.name) return;
@@ -97,7 +116,12 @@
             userConnected() {
                 return this.$store.state.user;
             },
-            //
+            routes() {
+                return this.$router.options.routes.filter(
+                    (route) => 
+                    !route.meta.hideNavigation && route.name !== 'profil'
+                );
+            },
         },
         watch: {},
     };

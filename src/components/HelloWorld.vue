@@ -12,7 +12,7 @@
             >
                 <v-card>
                     <v-card-title>
-                        Muslim
+                        Liste des utilisateurs
                         <v-spacer></v-spacer>
                         <v-text-field
                             v-model="search"
@@ -29,6 +29,43 @@
                         class="elevation-1"
                         :search="search"
                     >
+                        <!-- v slot action -->
+                        <template v-slot:[`item.actions`]="{ item }">
+                            <v-menu>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn
+                                        icon
+                                        v-on="on"
+                                    >
+                                        <v-icon
+                                            color="grey_dark"
+                                            class="pointer"
+                                            >mdi-dots-vertical</v-icon
+                                        >
+                                    </v-btn>
+                                </template>
+                                <v-list dense>
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="deleteUser(item)"
+                                    >
+                                        <v-list-item-title>copier le numero de téléphone</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="deleteUser(item)"
+                                    >
+                                        <v-list-item-title>copier le mail</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="deleteUser(item)"
+                                    >
+                                        <v-list-item-title>Signaler</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </template>
                     </v-data-table>
                 </v-card>
             </v-col>
@@ -49,6 +86,8 @@
                     { text: 'email', value: 'email' },
                     { text: 'metier', value: 'job' },
                     { text: 'numero', value: 'number' },
+                    { text: 'actions', value: 'actions' },
+
                     // { text: 'entreprise', value: 'entreprise' },
                 ],
                 items: [],
@@ -58,7 +97,6 @@
         },
         mounted() {
             this.getFirestoreCollection();
-            
         },
         methods: {
             async getFirestoreCollection() {
@@ -74,6 +112,9 @@
                         this.users.push(item);
                     }
                 });
+            },
+            deleteUser(item) {
+                console.log(item);
             },
         },
         computed: {
