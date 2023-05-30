@@ -14,7 +14,7 @@
                 md="6"
             >
                 <v-alert
-                    v-if="!user.profilCompleted"
+                    v-if=" user && !user.profilCompleted"
                     dense
                     type="info"
                 >
@@ -43,7 +43,7 @@
                         <v-card-text>
                             <v-icon
                                 class="success--text d-flex justify-end"
-                                v-if="user.profilCompleted"
+                                v-if="user && user.profilCompleted"
                             >
                                 mdi-check-circle
                             </v-icon>
@@ -65,6 +65,10 @@
                                 v-model="user.email"
                                 label="Adresse email"
                             ></v-text-field>
+                            <v-text-field
+                                v-model="user.number"
+                                label="Numéro de téléphone"
+                            ></v-text-field>
                         </v-card-text>
 
                         <v-card-actions class="justify-center">
@@ -79,7 +83,7 @@
                                 Enregistrer
                             </v-btn>
                             <v-btn
-                                v-if="!user.profilCompleted"
+                                v-if="user && !user.profilCompleted"
                                 color="success"
                                 @click="validateMyProfil()"
                                 :disabled="!formIsValid"
@@ -131,9 +135,9 @@
                 this.$store.dispatch('getInformationSheet', this.$store.state.user.id);
             },
             addInformationsSheet() {
-                this.objet.email = this.currentUser.email;
-                this.objet.profilCompleted = true;
+                this.objet = this.$store.state.user;
                 this.$store.dispatch('addInformationSheet', this.objet);
+                this.toggleCard();
             },
             validateMyProfil() {
                 this.objet = this.$store.state.user;

@@ -1,54 +1,6 @@
 <template>
     <v-app>
-        <v-app-bar
-            v-if="!$route.meta.hideNavigation"
-            app
-            color="secondary"
-            dark
-        >
-            <div class="mr-6">
-                <h1>MuslimRef</h1>
-            </div>
-
-            <div>
-                <router-link
-                    :class="{ 'active-link': $route.path === '/' }"
-                    to="/"
-                    >Accueil</router-link
-                >
-                |
-                <router-link
-                    :class="{ 'active-link': $route.path === '/about' }"
-                    to="/about"
-                    >à propos</router-link
-                >
-                |
-            </div>
-            <v-spacer></v-spacer>
-
-            <v-btn
-                text
-                @click="goTo('profil')"
-            >
-                <span class="mr-2">Mon profil</span>
-                <v-icon>mdi-account</v-icon>
-            </v-btn>
-            <v-divider
-                class="mx-4"
-                inset
-                vertical
-            ></v-divider>
-            <div>
-                <v-btn
-                    text
-                    @click="signOut"
-                >
-                    <span class="mr-2">Se déconnecter</span>
-                    <v-icon>mdi-logout</v-icon>
-                </v-btn>
-            </div>
-        </v-app-bar>
-
+        <Navbar />
         <v-main>
             <router-view />
         </v-main>
@@ -56,6 +8,7 @@
 </template>
 
 <script>
+import Navbar from './components/Navbar'
     import { auth } from './firebase';
     import 'firebase/auth';
     export default {
@@ -64,20 +17,15 @@
         data: () => ({
             //
         }),
+        components: {
+            Navbar,
+        },
         beforeMount() {
             //fetch user to check if user is logged in
-            this.$store.dispatch('fetchUser');
+            this.$store.dispatch('fetchUser', auth.currentUser);
         },
         methods: {
-            goTo(route) {
-                if (route === this.$route.name) return;
-                this.$router.push({ name: route });
-            },
-            signOut() {
-                auth.signOut().then(() => {
-                    this.$router.replace({ name: 'login' });
-                });
-            },
+            //
         },
         computed: {
             //
@@ -86,10 +34,5 @@
     };
 </script>
 <style scoped>
-    .active-link {
-        color: #ffffff !important;
-    }
-    .routerLinkInactive {
-        color: #000000 !important;
-    }
+
 </style>

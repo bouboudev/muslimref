@@ -48,7 +48,7 @@
                     { text: 'prenom', value: 'firstName' },
                     { text: 'email', value: 'email' },
                     { text: 'metier', value: 'job' },
-                    { text: 'Profil Validé ?', value: 'profilCompleted' },
+                    { text: 'numero', value: 'number' },
                     // { text: 'entreprise', value: 'entreprise' },
                 ],
                 items: [],

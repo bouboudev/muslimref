@@ -19,7 +19,7 @@ export default new Vuex.Store({
             state.user = null;
         },
         console(state) {
-            console.log(' console du store :', state.user)
+            console.log(' console du store :', state.user);
         },
     },
     actions: {
@@ -95,10 +95,10 @@ export default new Vuex.Store({
                 if (user === null) {
                     commit('CLEAR_USER');
                 } else {
-                  // call getInformationSheet to get the user's information sheet
-                 await this.dispatch('getInformationSheet', user.uid);
-                  console.log('user fetchUser :', user)
-                  // commit('SET_USER', user);
+                    // call getInformationSheet to get the user's information sheet
+                    await this.dispatch('getInformationSheet', user.uid);
+                    console.log('user fetchUser :', user);
+                    // commit('SET_USER', user);
                     // add informations on the user's profile
 
                     // if (router.isReady() && router.currentRoute.value.path === '/login') {
@@ -106,7 +106,7 @@ export default new Vuex.Store({
                     // }
                     // si j'actualise une page qui n'est pas le login, je reste sur la page
                     if (router.currentRoute.path === '/login') {
-                      console.log('je pousse vers le home')
+                        console.log('je pousse vers le home');
                         router.push('/');
                     }
                 }
@@ -131,7 +131,8 @@ export default new Vuex.Store({
                 id: auth.currentUser.uid,
                 firstName: details.firstName,
                 lastName: details.lastName,
-                email : details.email,
+                email: details.email,
+                number: details.number,
                 job: details.job,
                 profilCompleted: details.profilCompleted ? details.profilCompleted : false,
             })
@@ -143,20 +144,18 @@ export default new Vuex.Store({
                 });
             commit('SET_USER', details);
         },
-        async getInformationSheet({ commit } , uid) {
-          
+        async getInformationSheet({ commit }, uid) {
             const docRef = doc(db, 'informationsSheet', uid);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-              //si la fiche de renseignement existe, on la récupère et on la met dans le store
+                //si la fiche de renseignement existe, on la récupère et on la met dans le store
                 const userUpdated = {
-                  ...auth.currentUser,
-                  ...docSnap.data(),
+                    ...auth.currentUser,
+                    ...docSnap.data(),
                 };
                 commit('SET_USER', userUpdated);
                 console.log('getInformationSheet :', userUpdated);
-
             } else {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');
