@@ -46,21 +46,27 @@
                                 </template>
                                 <v-list dense>
                                     <v-list-item
+                                        v-if="item.number"
                                         class="pointer"
-                                        @click="deleteUser(item)"
+                                        @click="copyElement(item.number)"
                                     >
+                                    <v-icon small>mdi-phone</v-icon>
                                         <v-list-item-title>copier le numero de téléphone</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item
+                                    v-if="item.email"
                                         class="pointer"
-                                        @click="deleteUser(item)"
+                                        @click="copyElement(item.email)"
                                     >
+                                    <v-icon small>mdi-mail</v-icon>
+
                                         <v-list-item-title>copier le mail</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item
                                         class="pointer"
-                                        @click="deleteUser(item)"
+                                        @click="copyElement(item)"
                                     >
+                                    <v-icon small>mdi-account</v-icon>
                                         <v-list-item-title>Signaler</v-list-item-title>
                                     </v-list-item>
                                 </v-list>
@@ -113,8 +119,10 @@
                     }
                 });
             },
-            deleteUser(item) {
-                console.log(item);
+            copyElement(item) {
+                //copy to clipboard
+                navigator.clipboard.writeText(item);
+                console.log('copied', item);
             },
         },
         computed: {
