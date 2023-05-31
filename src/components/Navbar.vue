@@ -64,8 +64,10 @@
                 <v-icon>mdi-logout</v-icon>
             </v-btn> -->
 
-            <v-list-item @click="goTo('profil')">
-                <!-- avat -->
+            <v-list-item
+                @click="goTo('profil')"
+                v-if="user"
+            >
                 <v-list-item-avatar>
                     <v-img
                         :src="imageUrl"
@@ -74,11 +76,11 @@
                 </v-list-item-avatar>
                 <v-list-item-content>
                     <v-list-item-title>
-                        {{ userConnected ? userConnected.firstName : '' }}
-                        {{ userConnected ? userConnected.lastName : '' }}
+                        {{ user ? user.firstName : '' }}
+                        {{ user ? user.lastName : '' }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ userConnected ? userConnected.job : '' }}
+                        {{ user ? user.job : '' }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -87,6 +89,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
     import { auth } from '../firebase';
     import 'firebase/auth';
     export default {
@@ -98,7 +101,7 @@
             //
         }),
         created() {
-            console.log('user role : ', this.userConnected ? this.userConnected.role : '');
+            console.log('user role : ', this.user ? this.user.role : '');
         },
 
         methods: {
@@ -113,11 +116,10 @@
             },
         },
         computed: {
-            userConnected() {
-                return this.$store.state.user;
-            },
+            ...mapState(['user']),
+
             routes() {
-                const userRole = this.userConnected ? this.userConnected.role : ''; // Obtenez le rôle de l'utilisateur ici, par exemple depuis le stockage local
+                const userRole = this.user ? this.user.role : ''; // Obtenez le rôle de l'utilisateur ici, par exemple depuis le stockage local
 
                 return this.$router.options.routes.filter((route) => {
                     if (

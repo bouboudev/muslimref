@@ -23,7 +23,7 @@
                 </div>
                 <div v-else>
                     <v-alert
-                        v-if="user && !user.profilCompleted"
+                        v-show="user && !user.profilCompleted"
                         dense
                         type="info"
                     >
@@ -50,12 +50,21 @@
                             :disabled="cardIsDisabled"
                         >
                             <v-card-text>
+                                <div class=" d-flex justify-end">
+
+                                <v-card-subtitle>
+                                    Profil validé
+                                </v-card-subtitle>
                                 <v-icon
-                                    class="success--text d-flex justify-end"
+                                    class="success--text"
                                     v-if="user && user.profilCompleted"
-                                >
+                                > 
                                     mdi-check-circle
+                                    
                                 </v-icon>
+                                </div>
+
+                                
                                 <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
                                 <!-- icon to disabled the card -->
                                 <v-text-field
@@ -179,9 +188,9 @@
         },
         computed: {
             ...mapState(['user']),
-            user() {
-                return this.$store.state.user;
-            },
+            // user() {
+            //     return this.$store.state.user;
+            // },
             formIsValid() {
                 return this.user.firstName && this.user.lastName && this.user.job && this.user.email;
             },

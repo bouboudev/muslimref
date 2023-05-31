@@ -9,8 +9,9 @@
 
 <script>
 import Navbar from './components/Navbar'
-    import { auth } from './firebase';
+    // import { auth } from './firebase';
     import 'firebase/auth';
+import { mapState } from 'vuex';
     export default {
         name: 'App',
 
@@ -20,15 +21,17 @@ import Navbar from './components/Navbar'
         components: {
             Navbar,
         },
-        beforeMount() {
+        async created() {
             //fetch user to check if user is logged in
-            this.$store.dispatch('fetchUser', auth.currentUser);
+            // this.$store.dispatch('fetchUser', auth.currentUser);
+            // await this.dispatch('getInformationSheet', this.user.uid);
             
         },
         methods: {
             //
         },
         computed: {
+            ...mapState(['user']),
             //
         },
         watch: {},
