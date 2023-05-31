@@ -13,76 +13,89 @@
                 sm="8"
                 md="6"
             >
-                <v-alert
-                    v-if="user && !user.profilCompleted"
-                    dense
-                    type="info"
-                >
-                    Votre profil n'est pas encore validé, il le sera dans les plus brefs délais.
-                </v-alert>
-
-                <v-card-actions class="justify-end">
-                    <v-icon
-                        icon
-                        class="gray--text"
-                        @click="toggleCard()"
+                <!-- skelleton if !user -->
+                <div v-if="!user">
+                    <v-skeleton-loader
+                        class="mx-auto"
+                        max-width="600"
+                        type="card-avatar"
+                    ></v-skeleton-loader>
+                </div>
+                <div v-else>
+                    <v-alert
+                        v-if="user && !user.profilCompleted"
+                        dense
+                        type="info"
                     >
-                        mdi-pencil
-                    </v-icon>
-                </v-card-actions>
-                <v-form
-                    @submit.prevent="addInformationsSheet()"
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                >
-                    <v-card
-                        class="pa-8"
-                        :disabled="cardIsDisabled"
+                        Votre profil n'est pas encore validé, il le sera dans les plus brefs délais.
+                    </v-alert>
+
+                    <v-card-actions class="justify-end">
+                        <v-icon
+                            icon
+                            class="gray--text"
+                            @click="toggleCard()"
+                        >
+                            mdi-pencil
+                        </v-icon>
+                    </v-card-actions>
+                    <v-form
+                        @submit.prevent="addInformationsSheet()"
+                        ref="form"
+                        v-model="valid"
+                        lazy-validation
                     >
-                        <v-card-text>
-                            <v-icon
-                                class="success--text d-flex justify-end"
-                                v-if="user && user.profilCompleted"
-                            >
-                                mdi-check-circle
-                            </v-icon>
-                            <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
-                            <!-- icon to disabled the card -->
-                            <v-text-field
-                                v-model="user.firstName"
-                                label="Prénom"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="user.lastName"
-                                label="Nom"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="user.job"
-                                label="Métier"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="user.email"
-                                label="Adresse email"
-                            ></v-text-field>
-                            <v-text-field
-                                v-model="user.number"
-                                label="Numéro de téléphone"
-                            ></v-text-field>
-                        </v-card-text>
+                        <v-card
+                            class="pa-8"
+                            :disabled="cardIsDisabled"
+                        >
+                            <v-card-text>
+                                <v-icon
+                                    class="success--text d-flex justify-end"
+                                    v-if="user && user.profilCompleted"
+                                >
+                                    mdi-check-circle
+                                </v-icon>
+                                <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
+                                <!-- icon to disabled the card -->
+                                <v-text-field
+                                    v-model="user.firstName"
+                                    label="Prénom"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="user.lastName"
+                                    label="Nom"
+                                ></v-text-field>
+                                <v-autocomplete
+                                    v-model="user.job"
+                                    :items="jobs"
+                                    item-text="name"
+                                    label="Metier ou commerce"
+                                    required
+                                >
+                                </v-autocomplete>
+                                <v-text-field
+                                    v-model="user.email"
+                                    label="Adresse email"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="user.number"
+                                    label="Numéro de téléphone"
+                                ></v-text-field>
+                            </v-card-text>
 
-                        <v-card-actions class="justify-center">
-                            <v-btn
-                                color="primary"
-                                type="submit"
-                                :disabled="!formIsValid"
-                            >
-                                <!-- icon save -->
-                                <v-icon left>mdi-content-save</v-icon>
+                            <v-card-actions class="justify-center">
+                                <v-btn
+                                    color="primary"
+                                    type="submit"
+                                    :disabled="!formIsValid"
+                                >
+                                    <!-- icon save -->
+                                    <v-icon left>mdi-content-save</v-icon>
 
-                                Enregistrer
-                            </v-btn>
-                            <!-- <v-btn
+                                    Enregistrer
+                                </v-btn>
+                                <!-- <v-btn
                                 v-if="user && !user.profilCompleted"
                                 color="success"
                                 @click="validateMyProfil()"
@@ -93,23 +106,25 @@
 
                                 Valider son profil
                             </v-btn> -->
-                            <v-btn
-                                text
-                                @click="signOut"
-                            >
-                                <span class="mr-2">Se déconnecter</span>
-                                <v-icon>mdi-logout</v-icon>
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-form>
+                                <v-btn
+                                    text
+                                    @click="signOut"
+                                >
+                                    <span class="mr-2">Se déconnecter</span>
+                                    <v-icon>mdi-logout</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-form>
+                </div>
             </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
-  import { auth } from '../firebase';
+    import jobsJson from '@/assets/jobs.json';
+    import { auth } from '../firebase';
     import 'firebase/auth';
     import { mapState } from 'vuex';
     export default {
@@ -120,6 +135,7 @@
                 cardIsDisabled: true,
                 currentUser: null,
                 isMounted: true,
+                jobs: jobsJson,
             };
         },
         mounted() {
@@ -155,7 +171,7 @@
             toggleCard() {
                 this.cardIsDisabled = !this.cardIsDisabled;
             },
-             signOut() {
+            signOut() {
                 auth.signOut().then(() => {
                     this.$router.replace({ name: 'login' });
                 });

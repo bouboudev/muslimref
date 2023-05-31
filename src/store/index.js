@@ -161,7 +161,7 @@ export default new Vuex.Store({
                 .catch((error) => {
                     console.error('Erreur lors de la validation du profil', error);
                 });
-            commit('CONSOLEUR', details);
+            commit('console', details);
         },
         async getInformationSheet({ commit }, uid) {
             const docRef = doc(db, 'informationsSheet', uid);

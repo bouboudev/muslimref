@@ -111,7 +111,7 @@
             async validateProfil(item) {
                 this.objet = item;
                 this.objet.profilCompleted = true;
-                this.$store.dispatch('validateProfileSheet', this.objet);
+                await this.$store.dispatch('validateProfileSheet', this.objet);
                 await this.getFirestoreCollection();
                 console.log('validateProfil !', this.objet);
             },
