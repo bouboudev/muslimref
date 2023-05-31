@@ -120,7 +120,7 @@
             },
         }),
         methods: {
-            sendSignal() {
+            async sendSignal() {
                 this.signal.id = this.userSignaled.id;
                 this.signal.firstName = this.userSignaled.firstName;
                 this.signal.lastName = this.userSignaled.lastName;
@@ -131,6 +131,7 @@
                 this.dialog = false;
 
                 console.log('sendSignal', this.signal);
+                await this.$store.dispatch('signalProfile', this.signal);
             },
         },
         computed: {

@@ -180,6 +180,24 @@ export default new Vuex.Store({
                 console.log('No such document!');
             }
         },
+        //signaler un profil et setDoc(doc(db, 'profilesSignaled', details.id), {
+        async signalProfile({ commit }, details) {
+            await setDoc(doc(db, 'profilesSignaled', details.signalAuthorId), {
+                userSignaledId : details.id,
+                userSignaledFirstName : details.firstName,
+                userSignaledLastName : details.lastName,
+                userSignaledEmail: details.email,
+                AuthorId : details.signalAuthorId,
+                firstNameAuthor : details.firstNameAuthor,
+            })
+                .then((docRef) => {
+                    console.log('Profil signalé avec succès', docRef);
+                })
+                .catch((error) => {
+                    console.error('Erreur lors du signalement du profil', error);
+                });
+            commit('console', details);
+        }
     },
     modules: {},
 });
