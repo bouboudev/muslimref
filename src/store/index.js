@@ -182,11 +182,12 @@ export default new Vuex.Store({
         },
         //signaler un profil et setDoc(doc(db, 'profilesSignaled', details.id), {
         async signalProfile({ commit }, details) {
-            await setDoc(doc(db, 'profilesSignaled', details.signalAuthorId), {
+            await setDoc(doc(db, 'profilesSignaled', details.id), {
                 userSignaledId : details.id,
                 userSignaledFirstName : details.firstName,
                 userSignaledLastName : details.lastName,
                 userSignaledEmail: details.email,
+                userSignaledMessage: details.message,
                 AuthorId : details.signalAuthorId,
                 firstNameAuthor : details.firstNameAuthor,
             })

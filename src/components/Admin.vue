@@ -57,6 +57,53 @@
                         </template>
                     </v-data-table>
                 </v-card>
+                <v-card>
+                    <v-card-title>
+                        Comptes signalés
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="search"
+                            append-icon="mdi-magnify"
+                            label="Rechercher"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                        :headers="headersSignaled"
+                        :items="usersSignaled"
+                        :items-per-page="5"
+                        class="elevation-1"
+                        :search="search"
+                    >
+                        <!-- v slot action -->
+                        <template v-slot:[`item.actions`]="{ item }">
+                            <v-menu>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn
+                                        icon
+                                        v-on="on"
+                                    >
+                                        <v-icon
+                                            color="grey_dark"
+                                            class="pointer"
+                                            >mdi-dots-vertical</v-icon
+                                        >
+                                    </v-btn>
+                                </template>
+                                <v-list dense>
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="validateProfil(item)"
+                                    >
+                                        <v-icon small>mdi-account</v-icon>
+                                        <v-list-item-title>Valider l'utilisateur</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </template>
+                    </v-data-table>
+                </v-card>
             </v-col>
         </v-row>
     </v-container>
@@ -79,14 +126,26 @@
 
                     // { text: 'entreprise', value: 'entreprise' },
                 ],
+                headersSignaled: [
+                    { text: 'nom', value: 'userSignaledLastName' },
+                    { text: 'prenom', value: 'userSignaledFirstName' },
+                    { text: 'email', value: 'userSignaledEmail' },
+                    { text: 'auteur du signalement', value: 'firstNameAuthor' },
+                    { text: 'message', value: 'userSignaledMessage' },
+                    { text: 'actions', value: 'actions' },
+
+                    // { text: 'entreprise', value: 'entreprise' },
+                ],
                 items: [],
                 users: [],
                 search: '',
                 objet: {},
+                usersSignaled: [],
             };
         },
         mounted() {
             this.getFirestoreCollection();
+            this.getFirestoreCollectionSignaled();
         },
         methods: {
             async getFirestoreCollection() {
@@ -96,6 +155,15 @@
                 });
                 this.checkProfilIsCompleted();
             },
+            async getFirestoreCollectionSignaled() {
+                const querySnapshot = await getDocs(collection(db, 'profilesSignaled'));
+                querySnapshot.forEach((doc) => {
+                    this.usersSignaled.push(doc.data());
+                });
+                console.log('usersSignaled', this.usersSignaled);
+                
+            },
+
             checkProfilIsCompleted() {
                 this.items.forEach((item) => {
                     if (!item.profilCompleted) {
