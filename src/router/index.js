@@ -1,3 +1,4 @@
+import store from '@/store';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 // import { getAuth } from 'firebase/auth';
@@ -8,6 +9,7 @@ const routes = [
     {
         path: '/',
         name: 'home',
+        nameFr: 'Accueil',
         component: () => import('@/views/HomeView.vue'),
         meta: {
             requiresAuth: true,
@@ -30,6 +32,7 @@ const routes = [
     {
         path: '/about',
         name: 'about',
+        nameFr: 'A propos',
         component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
         meta: {
             requiresAuth: true,
@@ -42,6 +45,16 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/ProfilView.vue'),
         meta: {
             requiresAuth: true,
+        },
+    },
+    //admin
+    {
+        path: '/admin',
+        name: 'admin',
+        component: () => import(/* webpackChunkName: "about" */ '../views/AdminView.vue'),
+        meta: {
+            requiresAuth: true,
+            requireRole : 'admin'
         },
     },
 ];
@@ -89,7 +102,28 @@ const router = new VueRouter({
 //     next();
 //   });
 
-  
+// verifier le role l'utilisateur si il est admin ou pas
+router.beforeEach((to, from, next) => {
+    //lancer l'action du store getUser
+    store.dispatch('fetchUser');
+    //récupérer l'utilisateur connecté venant du store
+    const user = store.state.user;
+    //si l'utilisateur à le role admin
+    if (to.matched.some((record) => record.meta.role === 'admin')) {
+        //si l'utilisateur n'est pas admin
+        if (user.role !== 'admin') {
+            console.log('vous n\'avez pas les droits pour accéder à cette page');
+            next('/');
+            return;
+        }
+        else {
+            console.log('vous avez les droits pour accéder à cette page', user);
+        }
+    }
+    next();
+});
+
+
 
 
 export default router;

@@ -96,9 +96,9 @@ export default new Vuex.Store({
                     commit('CLEAR_USER');
                 } else {
                     // call getInformationSheet to get the user's information sheet
+                    commit('SET_USER', user);
                     await this.dispatch('getInformationSheet', user.uid);
                     console.log('user fetchUser :', user);
-                    // commit('SET_USER', user);
                     // add informations on the user's profile
 
                     // if (router.isReady() && router.currentRoute.value.path === '/login') {
@@ -106,9 +106,10 @@ export default new Vuex.Store({
                     // }
                     // si j'actualise une page qui n'est pas le login, je reste sur la page
                     if (router.currentRoute.path === '/login') {
-                        console.log('je pousse vers le home');
+                        console.log('je pousse vers le home car login');
                         router.push('/');
                     }
+                 
                 }
             });
         },
@@ -143,6 +144,24 @@ export default new Vuex.Store({
                     console.error("Erreur lors de l'ajout de la fiche de renseignement", error);
                 });
             commit('SET_USER', details);
+        },
+        async validateProfileSheet({ commit }, details) {
+            await setDoc(doc(db, 'informationsSheet', details.id), {
+                id: details.id,
+                firstName: details.firstName,
+                lastName: details.lastName,
+                email: details.email,
+                number: details.number,
+                job: details.job,
+                profilCompleted: details.profilCompleted ? details.profilCompleted : false,
+            })
+                .then((docRef) => {
+                    console.log('Profilvalidé avec succès', docRef);
+                })
+                .catch((error) => {
+                    console.error('Erreur lors de la validation du profil', error);
+                });
+            commit('CONSOLEUR', details);
         },
         async getInformationSheet({ commit }, uid) {
             const docRef = doc(db, 'informationsSheet', uid);

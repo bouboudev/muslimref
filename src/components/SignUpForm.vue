@@ -42,12 +42,19 @@
                             label="E-mail"
                             required
                         ></v-text-field>
-                        <v-text-field
-                            v-model="register_form.job"
-                            :rules="jobRules"
+                        <!-- jobs list -->
+                    
+                        <v-autocomplete
+                        v-model="register_form.job"
+                            :items="jobs"
+                            item-text="name"
+                            
                             label="Metier ou commerce"
                             required
-                        ></v-text-field>
+                        >
+
+                        </v-autocomplete>
+
                         <v-text-field
                             v-model="register_form.number"
                             :rules="numberRules"
@@ -91,6 +98,7 @@
 <script>
     // import { auth } from '../firebase';
     // import { createUserWithEmailAndPassword } from 'firebase/auth';
+    import jobsJson  from  '@/assets/jobs.json';
     export default {
         data: () => ({
             valid: true,
@@ -105,7 +113,7 @@
             ],
             firstName: '',
             lastName: '',
-            job: '',
+            otherJob: '',
             number: '',
             register_form: {
                 firstName: '',
@@ -115,15 +123,18 @@
                 email: '',
                 password: '',
             },
+            jobs: jobsJson,
             confirmPassword: '',
         }),
 
         methods: {
             async validate() {
-                if (this.valid)
-                    this.$store.dispatch('register', this.register_form).catch((error) => {
+                if (this.valid){
+
+                    await this.$store.dispatch('register', this.register_form).catch((error) => {
                         console.log(error);
                     });
+                        }
             },
             reset() {
                 this.$refs.form.reset();

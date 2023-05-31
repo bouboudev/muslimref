@@ -14,11 +14,11 @@
                 md="6"
             >
                 <v-alert
-                    v-if=" user && !user.profilCompleted"
+                    v-if="user && !user.profilCompleted"
                     dense
                     type="info"
                 >
-                    Vous devez valider votre profil pour figurer dans la liste des utilisateurs.
+                    Votre profil n'est pas encore validé, il le sera dans les plus brefs délais.
                 </v-alert>
 
                 <v-card-actions class="justify-end">
@@ -82,16 +82,23 @@
 
                                 Enregistrer
                             </v-btn>
-                            <v-btn
+                            <!-- <v-btn
                                 v-if="user && !user.profilCompleted"
                                 color="success"
                                 @click="validateMyProfil()"
                                 :disabled="!formIsValid"
                             >
-                                <!-- icon save -->
+                           
                                 <v-icon left>mdi-content-save</v-icon>
 
                                 Valider son profil
+                            </v-btn> -->
+                            <v-btn
+                                text
+                                @click="signOut"
+                            >
+                                <span class="mr-2">Se déconnecter</span>
+                                <v-icon>mdi-logout</v-icon>
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -102,6 +109,8 @@
 </template>
 
 <script>
+  import { auth } from '../firebase';
+    import 'firebase/auth';
     import { mapState } from 'vuex';
     export default {
         data() {
@@ -117,9 +126,7 @@
             console.log('this.$store.state.user', this.$store.state.user);
             //pause de 2 seconde
 
-                // this.checkCurrentUser();
-            
- 
+            // this.checkCurrentUser();
         },
         methods: {
             checkCurrentUser() {
@@ -148,6 +155,11 @@
             toggleCard() {
                 this.cardIsDisabled = !this.cardIsDisabled;
             },
+             signOut() {
+                auth.signOut().then(() => {
+                    this.$router.replace({ name: 'login' });
+                });
+            },
         },
         computed: {
             ...mapState(['user']),
@@ -158,7 +170,7 @@
                 return this.user.firstName && this.user.lastName && this.user.job && this.user.email;
             },
         },
-             beforeRouteLeave(to, from, next) {
+        beforeRouteLeave(to, from, next) {
             this.isMounted = false;
             next();
         },

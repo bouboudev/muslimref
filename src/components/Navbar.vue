@@ -28,19 +28,18 @@
             >
         </v-toolbar-title> -->
 
-        <v-toolbar-title 
-        v-for=" route in routes"
-        :key="route.path"
-        class="mx-2"
-        color="red"
+        <v-toolbar-title
+            v-for="route in routes"
+            :key="route.path"
+            class="mx-2"
+            color="red"
         >
             <router-link
                 :class="{ 'active-link': $route.path === route.path }"
                 :to="route.path"
-                >{{route.name}}</router-link
+                >{{ route.nameFr }}</router-link
             >
         </v-toolbar-title>
-        
 
         <v-spacer></v-spacer>
 
@@ -75,11 +74,11 @@
                 </v-list-item-avatar>
                 <v-list-item-content>
                     <v-list-item-title>
-                        {{ userConnected.lastName }}
-                        {{ userConnected.firstName }}
+                        {{ userConnected ? userConnected.firstName : '' }}
+                        {{ userConnected ? userConnected.lastName : '' }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ userConnected.job }}
+                        {{ userConnected ? userConnected.job : '' }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -95,11 +94,12 @@
 
         data: () => ({
             imageUrl: 'https://oasys.ch/wp-content/uploads/2019/03/photo-avatar-profil.png',
-           
-            
 
             //
         }),
+        created() {
+            console.log('user role : ', this.userConnected ? this.userConnected.role : '');
+        },
 
         methods: {
             goTo(route) {
@@ -117,10 +117,18 @@
                 return this.$store.state.user;
             },
             routes() {
-                return this.$router.options.routes.filter(
-                    (route) => 
-                    !route.meta.hideNavigation && route.name !== 'profil'
-                );
+                const userRole = this.userConnected ? this.userConnected.role : ''; // Obtenez le rôle de l'utilisateur ici, par exemple depuis le stockage local
+
+                return this.$router.options.routes.filter((route) => {
+                    if (
+                        (route.name === 'admin' && userRole !== 'admin') || // Vérifier si le nom est 'admin' et l'utilisateur n'a pas le rôle 'admin'
+                        (route.meta.requireRole && route.meta.requireRole !== userRole) // Vérifier si la route a une exigence de rôle et si le rôle de l'utilisateur ne correspond pas
+                    ) {
+                        return false; // Cacher la route si l'une des conditions est vraie
+                    }
+
+                    return !route.meta.hideNavigation && route.name !== 'profil';
+                });
             },
         },
         watch: {},

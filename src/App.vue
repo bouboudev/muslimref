@@ -23,6 +23,7 @@ import Navbar from './components/Navbar'
         beforeMount() {
             //fetch user to check if user is logged in
             this.$store.dispatch('fetchUser', auth.currentUser);
+            
         },
         methods: {
             //
