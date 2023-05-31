@@ -67,10 +67,11 @@
                                         @click="copyElement(item)"
                                     >
                                     <v-icon small>mdi-account</v-icon>
-                                        <v-list-item-title>Signaler</v-list-item-title>
+                                        <v-list-item-title><signal :userSignaled="item"/></v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
+                            
                         </template>
                     </v-data-table>
                 </v-card>
@@ -80,6 +81,7 @@
 </template>
 
 <script>
+    import signal from './Signal.vue';
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
     import { mapState } from 'vuex';
@@ -100,6 +102,9 @@
                 users: [],
                 search: '',
             };
+        },
+        components: {
+            signal,
         },
         mounted() {
             this.getFirestoreCollection();
