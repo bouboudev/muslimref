@@ -1,5 +1,7 @@
 <template>
     <v-container fluid>
+        <!-- card color with user length -->
+
         <v-row
             justify="center"
             align="center"
@@ -10,12 +12,38 @@
                 sm="8"
                 md="10"
             >
-                <v-card>
+            <div class="d-flex justify-center">
+
+                <WidgetCardTemplate
+                    type="number"
+                    :title="users.length"
+                    subtitle="Nouveau utilisateurs"
+                    text="à valider"
+                    colorCard="primary"
+                    size="160"
+                ></WidgetCardTemplate>
+                <WidgetCardTemplate
+                    type="number"
+                    :title="usersSignaled.length"
+                    subtitle="Profils signalés"
+                    text="à valider"
+                    colorCard="warning"
+                    size="160"
+                ></WidgetCardTemplate>
+            </div>
+
+                <v-card class="my-8">
                     <v-card-title>
-                        Liste des utilisateurs
+                        Nouveaux utilisateurs
+                        <v-icon
+                            class="mx-2 mb-2"
+                            large
+                        >
+                            mdi-account-multiple-plus
+                        </v-icon>
                         <v-spacer></v-spacer>
                         <v-text-field
-                            v-model="search"
+                            v-model="searchValidedProfile"
                             append-icon="mdi-magnify"
                             label="Rechercher"
                             single-line
@@ -27,7 +55,7 @@
                         :items="users"
                         :items-per-page="5"
                         class="elevation-1"
-                        :search="search"
+                        :search="searchValidedProfile"
                     >
                         <!-- v slot action -->
                         <template v-slot:[`item.actions`]="{ item }">
@@ -59,10 +87,16 @@
                 </v-card>
                 <v-card>
                     <v-card-title>
-                        Comptes signalés
+                        Profiles signalés
+                        <v-icon
+                            class="mx-2 mb-2"
+                            large
+                        >
+                            mdi-account-alert
+                        </v-icon>
                         <v-spacer></v-spacer>
                         <v-text-field
-                            v-model="search"
+                            v-model="searchSignaledProfile"
                             append-icon="mdi-magnify"
                             label="Rechercher"
                             single-line
@@ -74,7 +108,7 @@
                         :items="usersSignaled"
                         :items-per-page="5"
                         class="elevation-1"
-                        :search="search"
+                        :search="searchSignaledProfile"
                     >
                         <!-- v slot action -->
                         <template v-slot:[`item.actions`]="{ item }">
@@ -96,8 +130,15 @@
                                         class="pointer"
                                         @click="validateProfil(item)"
                                     >
-                                        <v-icon small>mdi-account</v-icon>
-                                        <v-list-item-title>Valider l'utilisateur</v-list-item-title>
+                                        <v-list-item-title>Supprimer l'utilisateur</v-list-item-title>
+                                        <v-icon>mdi-account-cancel</v-icon>
+                                    </v-list-item>
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="deleteProfil(item)"
+                                    >
+                                        <v-list-item-title>Classer sans suite</v-list-item-title>
+                                        <v-icon>mdi-account-check</v-icon>
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
@@ -111,9 +152,14 @@
 
 <script>
     import { db } from '../firebase';
-    import { collection, getDocs } from 'firebase/firestore';
+    import { collection, onSnapshot, query } from 'firebase/firestore';
     import { mapState } from 'vuex';
+    import WidgetCardTemplate from './WidgetCardTemplate.vue';
+
     export default {
+        components: {
+            WidgetCardTemplate,
+        },
         data() {
             return {
                 headers: [
@@ -138,7 +184,8 @@
                 ],
                 items: [],
                 users: [],
-                search: '',
+                searchValidedProfile: '',
+                searchSignaledProfile: '',
                 objet: {},
                 usersSignaled: [],
             };
@@ -149,19 +196,42 @@
         },
         methods: {
             async getFirestoreCollection() {
-                const querySnapshot = await getDocs(collection(db, 'informationsSheet'));
-                querySnapshot.forEach((doc) => {
-                    this.items.push(doc.data());
+                // const querySnapshot = await getDocs(collection(db, 'informationsSheet'));
+                // querySnapshot.forEach((doc) => {
+                //     this.items.push(doc.data());
+                // });
+                const collectionRef = collection(db, 'informationsSheet');
+                const q = query(collectionRef);
+
+                onSnapshot(q, (snapshot) => {
+                    const newData = [];
+                    snapshot.forEach((doc) => {
+                        //where profile is validated
+                        if (doc.data().profilCompleted === false) newData.push(doc.data());
+                    });
+                    this.users = newData;
+                    console.log('newData', newData);
                 });
-                this.checkProfilIsCompleted();
+                // this.checkProfilIsCompleted();
             },
             async getFirestoreCollectionSignaled() {
-                const querySnapshot = await getDocs(collection(db, 'profilesSignaled'));
-                querySnapshot.forEach((doc) => {
-                    this.usersSignaled.push(doc.data());
+                // const querySnapshot = await getDocs(collection(db, 'profilesSignaled'));
+                // querySnapshot.forEach((doc) => {
+                //     this.usersSignaled.push(doc.data());
+                // });
+                // console.log('usersSignaled', this.usersSignaled);
+
+                const collectionRef = collection(db, 'profilesSignaled');
+                const q = query(collectionRef);
+
+                onSnapshot(q, (snapshot) => {
+                    const newData = [];
+                    snapshot.forEach((doc) => {
+                        newData.push(doc.data());
+                    });
+                    this.usersSignaled = newData;
+                    console.log('newData', newData);
                 });
-                console.log('usersSignaled', this.usersSignaled);
-                
             },
 
             checkProfilIsCompleted() {
