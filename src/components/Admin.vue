@@ -17,7 +17,6 @@
                         type="number"
                         :title="users.length"
                         :subtitle="users.length > 1 ? 'Nouveaux Utilisateurs' : 'Nouvel Utilisateur'"
-                        text="à valider"
                         colorCard="primary"
                         size="160"
                     ></WidgetCardTemplate>
@@ -25,7 +24,6 @@
                         type="number"
                         :title="usersSignaled.length"
                         :subtitle="usersSignaled.length > 1 ? 'Utilisateurs signalés' : 'Utilisateur signalé'"
-                        text="à valider"
                         colorCard="red darken-1"
                         size="160"
                     ></WidgetCardTemplate>
