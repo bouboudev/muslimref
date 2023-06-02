@@ -16,7 +16,7 @@
                     <WidgetCardTemplate
                         type="number"
                         :title="users.length"
-                        subtitle="Nouveau utilisateurs"
+                        :subtitle="users.length > 1 ? 'Nouveaux Utilisateurs' : 'Nouvel Utilisateur'"
                         text="à valider"
                         colorCard="primary"
                         size="160"
@@ -24,9 +24,9 @@
                     <WidgetCardTemplate
                         type="number"
                         :title="usersSignaled.length"
-                        subtitle="Profils signalés"
+                        :subtitle="usersSignaled.length > 1 ? 'Utilisateurs signalés' : 'Utilisateur signalé'"
                         text="à valider"
-                        colorCard="warning"
+                        colorCard="red darken-1"
                         size="160"
                     ></WidgetCardTemplate>
                 </div>
@@ -138,11 +138,11 @@
                                                             v-bind="attrs"
                                                             v-on="on"
                                                         >
-                                                        <v-list-item-title>
-                                                            Supprimer l'utilisateur
+                                                            <v-list-item-title>
+                                                                Supprimer l'utilisateur
 
-                                                            <v-icon>mdi-account-cancel</v-icon>
-                                                        </v-list-item-title>
+                                                                <v-icon>mdi-account-cancel</v-icon>
+                                                            </v-list-item-title>
                                                         </v-list-item>
                                                     </template>
                                                     <v-card>
@@ -182,7 +182,10 @@
                                             </v-row>
                                         </template>
                                     </v-list-item>
-                                    <v-list-item class="pointer">
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="cancelProfilSignaled(item)"
+                                    >
                                         <v-list-item-title>Classer sans suite</v-list-item-title>
                                         <v-icon>mdi-account-check</v-icon>
                                     </v-list-item>
@@ -243,10 +246,6 @@
         },
         methods: {
             async getFirestoreCollection() {
-                // const querySnapshot = await getDocs(collection(db, 'informationsSheet'));
-                // querySnapshot.forEach((doc) => {
-                //     this.items.push(doc.data());
-                // });
                 const collectionRef = collection(db, 'informationsSheet');
                 const q = query(collectionRef);
 
@@ -257,28 +256,22 @@
                         if (doc.data().profilCompleted === false) newData.push(doc.data());
                     });
                     this.users = newData;
-                    console.log('newData', newData);
                 });
-                // this.checkProfilIsCompleted();
             },
             async getFirestoreCollectionSignaled() {
-                // const querySnapshot = await getDocs(collection(db, 'profilesSignaled'));
-                // querySnapshot.forEach((doc) => {
-                //     this.usersSignaled.push(doc.data());
-                // });
-                // console.log('usersSignaled', this.usersSignaled);
-
                 const collectionRef = collection(db, 'profilesSignaled');
                 const q = query(collectionRef);
 
                 onSnapshot(q, (snapshot) => {
                     const newData = [];
                     snapshot.forEach((doc) => {
-                        newData.push(doc.data());
+                        if (doc.data().canceled === false) newData.push(doc.data());
                     });
                     this.usersSignaled = newData;
-                    console.log('newData', newData);
                 });
+            },
+            async cancelProfilSignaled(item) {
+                await this.$store.dispatch('cancelProfilSignaled', item);
             },
 
             checkProfilIsCompleted() {

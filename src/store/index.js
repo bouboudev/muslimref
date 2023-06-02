@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import router from '../router';
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
-import { doc, setDoc, getDoc, collection, onSnapshot, query } from 'firebase/firestore';
+import { doc, setDoc, addDoc, getDoc, collection, onSnapshot, query } from 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/database';
 Vue.use(Vuex);
@@ -187,7 +187,7 @@ export default new Vuex.Store({
         },
         //signaler un profil et setDoc(doc(db, 'profilesSignaled', details.id), {
         async signalProfile({ commit }, details) {
-            await setDoc(doc(db, 'profilesSignaled', details.id), {
+            await addDoc(collection(db, 'profilesSignaled'), {
                 userSignaledId: details.id,
                 userSignaledFirstName: details.firstName,
                 userSignaledLastName: details.lastName,
@@ -195,6 +195,7 @@ export default new Vuex.Store({
                 userSignaledMessage: details.message,
                 AuthorId: details.signalAuthorId,
                 firstNameAuthor: details.firstNameAuthor,
+                canceled: false,
             })
                 .then((docRef) => {
                     console.log('Profil signalé avec succès', docRef);
@@ -220,7 +221,6 @@ export default new Vuex.Store({
         },
 
         async deleteProfilFirebase({ commit }, details) {
-
             console.log('details', details);
             commit('CONSOLE', details);
             //retrouver l'uilisateur avec son id
@@ -229,18 +229,15 @@ export default new Vuex.Store({
             // console.log('user', user);
 
             // afficher la collection users :
-                const collectionRef = collection(db, 'users');
-             const q = query(collectionRef);
-             onSnapshot(q, (snapshot) => {
-                    const newData = [];
-                    snapshot.forEach((doc) => {
-                        newData.push(doc.data());
-                    });
-                    console.log('getFirestoreCollectionSignaled :', newData);
+            const collectionRef = collection(db, 'users');
+            const q = query(collectionRef);
+            onSnapshot(q, (snapshot) => {
+                const newData = [];
+                snapshot.forEach((doc) => {
+                    newData.push(doc.data());
                 });
-
-
-
+                console.log('getFirestoreCollectionSignaled :', newData);
+            });
 
             // await deleteUser(user)
             //     .then(() => {
@@ -254,6 +251,22 @@ export default new Vuex.Store({
             //         // Une erreur s'est produite lors de la suppression de l'utilisateur
             //         console.error("Erreur lors de la suppression de l'utilisateur :", error);
             //     });
+        },
+
+        async cancelProfilSignaled({ commit }, details) {
+            console.log('details cancel profil signaled', details);
+            commit('CONSOLE', details);
+            //ajouter le champs canceled à true dans la collection profilesSignaled
+            await setDoc(doc(db, 'profilesSignaled', details.userSignaledId), {
+                ...details,
+                canceled: true,
+            })
+                .then((docRef) => {
+                    console.log('Profil signalé avec succès', docRef);
+                })
+                .catch((error) => {
+                    console.error('Erreur lors du signalement du profil', error);
+                });
         },
     },
     modules: {},

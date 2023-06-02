@@ -27,8 +27,27 @@
                 >à propos</router-link
             >
         </v-toolbar-title> -->
-
-        <v-toolbar-title
+        <v-tabs>
+            <v-tab
+                v-for="(route, index) in routes"
+                :key="index"
+                :to="route.path"
+            >
+                <router-link
+                    :class="{ 'active-link': $route.path === route.path }"
+                    :to="route.path"
+                    >{{ route.nameFr }}</router-link
+                >
+            </v-tab>
+            <v-badge
+                v-if="totalOfItems && user.role === 'admin'"
+                color="red"
+                :content="totalOfItems"
+                class="mt-8 ml-n2"
+            >
+            </v-badge>
+        </v-tabs>
+        <!-- <v-toolbar-title
             v-for="route in routes"
             :key="route.path"
             class="mx-2"
@@ -39,14 +58,7 @@
                 :to="route.path"
                 >{{ route.nameFr }}</router-link
             >
-        </v-toolbar-title>
-
-        <v-badge
-            v-if="totalOfItems && user.role === 'admin'"
-            color="red"
-            :content="totalOfItems"
-        >
-        </v-badge>
+        </v-toolbar-title> -->
 
         <v-spacer></v-spacer>
 
@@ -131,7 +143,7 @@
             async fetchItemCount() {
                 try {
                     const collectionRef = collection(db, 'profilesSignaled');
-                    const q = query(collectionRef);
+                    const q = query(collectionRef, where('canceled', '==', false));
                     onSnapshot(q, (querySnapshot) => {
                         this.numberOfItems = querySnapshot.size;
                         console.log('profilesSignaledCount : ', this.numberOfItems);
@@ -143,8 +155,6 @@
                     const qNew = query(collectionRefNew, where('profilCompleted', '==', false));
                     console.log('qNew : ', qNew);
                     onSnapshot(qNew, (querySnapshot) => {
-
-
                         this.numberOfItemsBis = querySnapshot.size;
                         this.totalOfItems = this.numberOfItems + this.numberOfItemsBis;
                     });

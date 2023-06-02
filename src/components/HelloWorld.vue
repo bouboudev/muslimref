@@ -26,8 +26,9 @@
                         :headers="headers"
                         :items="users"
                         :items-per-page="5"
-                        class="elevation-1"
+                        class="elevation-0"
                         :search="search"
+
                     >
                         <!-- v slot action -->
                         <template v-slot:[`item.actions`]="{ item }">
