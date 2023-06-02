@@ -4,7 +4,9 @@ import Vuex from 'vuex';
 import router from '../router';
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, onSnapshot, query } from 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/database';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -15,11 +17,14 @@ export default new Vuex.Store({
         SET_USER(state, user) {
             state.user = user;
         },
+        SET_NOTIFICATION(state, notification) {
+            state.notification = notification;
+        },
         CLEAR_USER(state) {
             state.user = null;
         },
-        console(state) {
-            console.log(' console du store :', state.user);
+        CONSOLE(hello) {
+            console.log(' console du store :', hello);
         },
     },
     actions: {
@@ -43,7 +48,7 @@ export default new Vuex.Store({
                 return;
             }
 
-            commit('console', details);
+            commit('CONSOLE', details);
 
             router.push('/');
         },
@@ -109,7 +114,6 @@ export default new Vuex.Store({
                         console.log('je pousse vers le home car login');
                         router.push('/');
                     }
-                 
                 }
             });
         },
@@ -174,6 +178,7 @@ export default new Vuex.Store({
                     ...docSnap.data(),
                 };
                 commit('SET_USER', userUpdated);
+
                 console.log('getInformationSheet :', userUpdated);
             } else {
                 // doc.data() will be undefined in this case
@@ -183,13 +188,13 @@ export default new Vuex.Store({
         //signaler un profil et setDoc(doc(db, 'profilesSignaled', details.id), {
         async signalProfile({ commit }, details) {
             await setDoc(doc(db, 'profilesSignaled', details.id), {
-                userSignaledId : details.id,
-                userSignaledFirstName : details.firstName,
-                userSignaledLastName : details.lastName,
+                userSignaledId: details.id,
+                userSignaledFirstName: details.firstName,
+                userSignaledLastName: details.lastName,
                 userSignaledEmail: details.email,
                 userSignaledMessage: details.message,
-                AuthorId : details.signalAuthorId,
-                firstNameAuthor : details.firstNameAuthor,
+                AuthorId: details.signalAuthorId,
+                firstNameAuthor: details.firstNameAuthor,
             })
                 .then((docRef) => {
                     console.log('Profil signalé avec succès', docRef);
@@ -197,8 +202,59 @@ export default new Vuex.Store({
                 .catch((error) => {
                     console.error('Erreur lors du signalement du profil', error);
                 });
-            commit('console', details);
-        }
+            commit('CONSOLE', details);
+        },
+        async getFirestoreCollectionSignaled({ commit }) {
+            const collectionRef = collection(db, 'profilesSignaled');
+            const q = query(collectionRef);
+
+            onSnapshot(q, (snapshot) => {
+                const newData = [];
+                snapshot.forEach((doc) => {
+                    newData.push(doc.data());
+                });
+
+                commit('SET_NOTIFICATION', newData.length);
+                console.log('getFirestoreCollectionSignaled :', newData);
+            });
+        },
+
+        async deleteProfilFirebase({ commit }, details) {
+
+            console.log('details', details);
+            commit('CONSOLE', details);
+            //retrouver l'uilisateur avec son id
+            // const auth = getAuth(details.userSignaledId);
+            // const user = auth.currentUser;
+            // console.log('user', user);
+
+            // afficher la collection users :
+                const collectionRef = collection(db, 'users');
+             const q = query(collectionRef);
+             onSnapshot(q, (snapshot) => {
+                    const newData = [];
+                    snapshot.forEach((doc) => {
+                        newData.push(doc.data());
+                    });
+                    console.log('getFirestoreCollectionSignaled :', newData);
+                });
+
+
+
+
+            // await deleteUser(user)
+            //     .then(() => {
+            //         // supprimé sa fiche d'utilisateur dans la collection informationsSheet
+            //         deleteDoc(doc(db, 'informationsSheet', details.userSignaledId)).then(() => {
+            //             console.log('Fiche de renseignement supprimée');
+            //         });
+            //         console.log('Utilisateur supprimé');
+            //     })
+            //     .catch((error) => {
+            //         // Une erreur s'est produite lors de la suppression de l'utilisateur
+            //         console.error("Erreur lors de la suppression de l'utilisateur :", error);
+            //     });
+        },
     },
     modules: {},
 });

@@ -41,6 +41,13 @@
             >
         </v-toolbar-title>
 
+        <v-badge
+            v-if="totalOfItems && user.role === 'admin'"
+            color="red"
+            :content="totalOfItems"
+        >
+        </v-badge>
+
         <v-spacer></v-spacer>
 
         <!-- <v-btn
@@ -90,18 +97,25 @@
 
 <script>
     import { mapState } from 'vuex';
-    import { auth } from '../firebase';
+    import { auth, db } from '../firebase';
+    import { collection, onSnapshot, query, where } from 'firebase/firestore';
+
     import 'firebase/auth';
     export default {
         name: 'App',
 
         data: () => ({
             imageUrl: 'https://oasys.ch/wp-content/uploads/2019/03/photo-avatar-profil.png',
+            numberOfItems: 0,
+            numberOfItemsBis: 0,
+            totalOfItems: 0,
 
             //
         }),
-        created() {
-            console.log('user role : ', this.user ? this.user.role : '');
+
+        mounted() {
+            // this.$store.dispatch('getFirestoreCollectionSignaled');
+            this.fetchItemCount();
         },
 
         methods: {
@@ -113,6 +127,30 @@
                 auth.signOut().then(() => {
                     this.$router.replace({ name: 'login' });
                 });
+            },
+            async fetchItemCount() {
+                try {
+                    const collectionRef = collection(db, 'profilesSignaled');
+                    const q = query(collectionRef);
+                    onSnapshot(q, (querySnapshot) => {
+                        this.numberOfItems = querySnapshot.size;
+                        console.log('profilesSignaledCount : ', this.numberOfItems);
+
+                        this.totalOfItems = this.numberOfItems + this.numberOfItemsBis;
+                    });
+
+                    const collectionRefNew = collection(db, 'informationsSheet');
+                    const qNew = query(collectionRefNew, where('profilCompleted', '==', false));
+                    console.log('qNew : ', qNew);
+                    onSnapshot(qNew, (querySnapshot) => {
+
+
+                        this.numberOfItemsBis = querySnapshot.size;
+                        this.totalOfItems = this.numberOfItems + this.numberOfItemsBis;
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
             },
         },
         computed: {

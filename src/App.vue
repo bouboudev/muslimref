@@ -25,10 +25,15 @@ import { mapState } from 'vuex';
             //fetch user to check if user is logged in
             // this.$store.dispatch('fetchUser', auth.currentUser);
             // await this.dispatch('getInformationSheet', this.user.uid);
+            // getFirestoreCollectionSignaled();
             
         },
         methods: {
             //
+        },
+        mounted() {
+            this.$store.dispatch('getFirestoreCollectionSignaled');
+            // console.log('notification : ', this.notification);
         },
         computed: {
             ...mapState(['user']),

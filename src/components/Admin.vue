@@ -12,25 +12,24 @@
                 sm="8"
                 md="10"
             >
-            <div class="d-flex justify-center">
-
-                <WidgetCardTemplate
-                    type="number"
-                    :title="users.length"
-                    subtitle="Nouveau utilisateurs"
-                    text="à valider"
-                    colorCard="primary"
-                    size="160"
-                ></WidgetCardTemplate>
-                <WidgetCardTemplate
-                    type="number"
-                    :title="usersSignaled.length"
-                    subtitle="Profils signalés"
-                    text="à valider"
-                    colorCard="warning"
-                    size="160"
-                ></WidgetCardTemplate>
-            </div>
+                <div class="d-flex justify-center">
+                    <WidgetCardTemplate
+                        type="number"
+                        :title="users.length"
+                        subtitle="Nouveau utilisateurs"
+                        text="à valider"
+                        colorCard="primary"
+                        size="160"
+                    ></WidgetCardTemplate>
+                    <WidgetCardTemplate
+                        type="number"
+                        :title="usersSignaled.length"
+                        subtitle="Profils signalés"
+                        text="à valider"
+                        colorCard="warning"
+                        size="160"
+                    ></WidgetCardTemplate>
+                </div>
 
                 <v-card class="my-8">
                     <v-card-title>
@@ -110,7 +109,7 @@
                         class="elevation-1"
                         :search="searchSignaledProfile"
                     >
-                        <!-- v slot action -->
+                        <!-- v slot actions -->
                         <template v-slot:[`item.actions`]="{ item }">
                             <v-menu>
                                 <template v-slot:activator="{ on }">
@@ -126,17 +125,64 @@
                                     </v-btn>
                                 </template>
                                 <v-list dense>
-                                    <v-list-item
-                                        class="pointer"
-                                        @click="validateProfil(item)"
-                                    >
-                                        <v-list-item-title>Supprimer l'utilisateur</v-list-item-title>
-                                        <v-icon>mdi-account-cancel</v-icon>
+                                    <v-list-item class="pointer">
+                                        <template>
+                                            <v-row justify="center">
+                                                <v-dialog
+                                                    v-model="dialog"
+                                                    persistent
+                                                    max-width="390"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-list-item
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                        >
+                                                        <v-list-item-title>
+                                                            Supprimer l'utilisateur
+
+                                                            <v-icon>mdi-account-cancel</v-icon>
+                                                        </v-list-item-title>
+                                                        </v-list-item>
+                                                    </template>
+                                                    <v-card>
+                                                        <v-card-title class="text-h5">
+                                                            êtes vous sur de vouloir supprimer le compte de :
+                                                        </v-card-title>
+                                                        <v-list>
+                                                            <v-list-item>
+                                                                <v-list-item-content>
+                                                                    <v-list-item-title
+                                                                        >{{ item.userSignaledFirstName }} -
+                                                                        {{ item.userSignaledLastName }} -
+                                                                        {{ item.userSignaledEmail }}</v-list-item-title
+                                                                    >
+                                                                </v-list-item-content>
+                                                            </v-list-item>
+                                                        </v-list>
+                                                        <v-card-actions>
+                                                            <v-spacer></v-spacer>
+                                                            <v-btn
+                                                                color="green darken-1"
+                                                                text
+                                                                @click="dialog = false"
+                                                            >
+                                                                annuler
+                                                            </v-btn>
+                                                            <v-btn
+                                                                color="green darken-1"
+                                                                text
+                                                                @click="deleteProfil(item)"
+                                                            >
+                                                                Je confirme
+                                                            </v-btn>
+                                                        </v-card-actions>
+                                                    </v-card>
+                                                </v-dialog>
+                                            </v-row>
+                                        </template>
                                     </v-list-item>
-                                    <v-list-item
-                                        class="pointer"
-                                        @click="deleteProfil(item)"
-                                    >
+                                    <v-list-item class="pointer">
                                         <v-list-item-title>Classer sans suite</v-list-item-title>
                                         <v-icon>mdi-account-check</v-icon>
                                     </v-list-item>
@@ -154,7 +200,7 @@
     import { db } from '../firebase';
     import { collection, onSnapshot, query } from 'firebase/firestore';
     import { mapState } from 'vuex';
-    import WidgetCardTemplate from './WidgetCardTemplate.vue';
+    import WidgetCardTemplate from './templates/WidgetCardTemplate.vue';
 
     export default {
         components: {
@@ -188,6 +234,7 @@
                 searchSignaledProfile: '',
                 objet: {},
                 usersSignaled: [],
+                dialog: false,
             };
         },
         mounted() {
@@ -241,17 +288,17 @@
                     }
                 });
             },
-            copyElement(item) {
-                //copy to clipboard
-                navigator.clipboard.writeText(item);
-                console.log('copied', item);
-            },
             async validateProfil(item) {
                 this.objet = item;
                 this.objet.profilCompleted = true;
                 await this.$store.dispatch('validateProfileSheet', this.objet);
                 await this.getFirestoreCollection();
                 console.log('validateProfil !', this.objet);
+            },
+
+            async deleteProfil(item) {
+                await this.$store.dispatch('deleteProfilFirebase', item);
+                this.dialog = false;
             },
         },
         computed: {
