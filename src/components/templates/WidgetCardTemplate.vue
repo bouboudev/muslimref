@@ -8,10 +8,8 @@
             align="center"
             class="pointer mx-2 my-2"
         >
-            <v-card-title class="text-h4  white--text justify-center font-weight-bold">{{ title }}{{ afterTitle(type) }}</v-card-title>
-            <v-card-subtitle class="white--text text-subtitle-1 text-center font-weight-bold pb-0">{{
-                subtitle
-            }}</v-card-subtitle>
+            <v-card-title class="text-h4 white--text justify-center font-weight-bold">{{ title }}{{ afterTitle(type) }}</v-card-title>
+            <v-card-subtitle class="white--text text-subtitle-1 text-center font-weight-bold pb-0">{{ subtitle }}</v-card-subtitle>
             <v-card-text
                 :v-html="text"
                 class="text-subtitle-2 text-center"
@@ -22,8 +20,7 @@
 </template>
 
 <script>
-
-     export default {
+    export default {
         props: {
             to: {
                 type: String,
@@ -33,7 +30,7 @@
                 required: true,
             },
             title: {
-                type: String,
+                type: Number,
                 required: true,
             },
             subtitle: {
@@ -73,8 +70,7 @@
                 }
             },
         },
-
-     };
+    };
 </script>
 
 <style></style>
