@@ -91,7 +91,14 @@
                                     v-model="user.number"
                                     label="Numéro de téléphone"
                                 ></v-text-field>
+                                 <v-text-field
+                                 v-if="user.role === 'admin'"
+                                 disabled
+                                    v-model="user.role"
+                                    label="role"
+                                ></v-text-field>
                             </v-card-text>
+                            
 
                             <v-card-actions class="justify-center">
                                 <v-btn
