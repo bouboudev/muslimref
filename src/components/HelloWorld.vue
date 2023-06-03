@@ -10,6 +10,8 @@
                 sm="8"
                 md="10"
             >
+            <div v-if=" user && user.profilCompleted">
+                
                 <v-card>
                     <v-card-title>
                         Liste des utilisateurs
@@ -76,6 +78,15 @@
                         </template>
                     </v-data-table>
                 </v-card>
+            </div>
+            <div v-else class="text-center">
+                <v-card>
+                    <v-card-text class="headline">
+                        Votre profil doit etre validé par un administrateur pour acceder à la liste des utilisateurs.
+                    </v-card-text>
+                </v-card>
+
+            </div>
             </v-col>
         </v-row>
     </v-container>

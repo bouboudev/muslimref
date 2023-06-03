@@ -2,12 +2,18 @@
     <v-app-bar
         v-if="!$route.meta.hideNavigation"
         app
-        color="secondary"
-        dark
+        color="navbarBackground"
+        class="textNavbar--text"
+        
     >
-        <div class="mr-6">
-            <h1>MuslimRef</h1>
-        </div>
+        
+             <v-img
+            src="../assets/image.png"
+            height="50px"
+            width="150px"
+            contain
+          ></v-img>
+        
 
         <!-- <v-toolbar-title 
         class="mx-2"
@@ -27,20 +33,24 @@
                 >à propos</router-link
             >
         </v-toolbar-title> -->
-        <v-tabs>
+        <v-tabs
+                color="textNavbar"
+        
+        >
             <v-tab
-                v-for="(route, index) in routes"
-                :key="index"
+                v-for="route in routes"
+                :key="route.path"
                 :to="route.path"
             >
                 <router-link
-                    :class="{ 'active-link': $route.path === route.path }"
+                
+                    :class="{ 'active-link': $route.path === route.path, 'routerLinkInactive': $route.path !== route.path  }"
                     :to="route.path"
                     >{{ route.nameFr }}</router-link
                 >
             </v-tab>
             <v-badge
-                v-if="totalOfItems && user.role === 'admin'"
+                v-if="totalOfItems && user.role && user.role === 'admin'"
                 color="red"
                 :content="totalOfItems"
                 class="mt-8 ml-n2"
@@ -74,7 +84,7 @@
             inset
             vertical
         ></v-divider>
-        <div>
+        
             <!-- <v-btn
                 text
                 @click="signOut"
@@ -83,27 +93,47 @@
                 <v-icon>mdi-logout</v-icon>
             </v-btn> -->
 
-            <v-list-item
-                @click="goTo('profil')"
-                v-if="user"
-            >
-                <v-list-item-avatar>
-                    <v-img
-                        :src="imageUrl"
-                        alt="avatar"
-                    ></v-img>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ user ? user.firstName : '' }}
-                        {{ user ? user.lastName : '' }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        {{ user ? user.job : '' }}
-                    </v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-        </div>
+            <!-- @click="goTo('profil')" -->
+
+            
+                <v-menu offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                        <div>
+                        <v-list-item
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-list-item-avatar>
+                                <v-img
+                                    :src="imageUrl"
+                                    alt="avatar"
+                                ></v-img>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    {{ user ? user.firstName : '' }}
+                                    {{ user ? user.lastName : '' }}
+                                </v-list-item-title>
+                                <v-list-item-subtitle>
+                                    {{ user ? user.job : '' }}
+                                </v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        </div>
+                    </template>
+                    <v-list>
+                        <v-list-item
+                            v-for="(item, index) in items"
+                            :key="index"
+                            @click="performAction(item)"
+                        >
+                            <v-icon>{{ item.icon }}</v-icon>
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            
+        
     </v-app-bar>
 </template>
 
@@ -121,6 +151,10 @@
             numberOfItems: 0,
             numberOfItemsBis: 0,
             totalOfItems: 0,
+            items: [
+                { title: 'Accéder à mon profil', icon: 'mdi-account',  action: 'goTo', params: ['profil'] },
+                { title: 'Se deconnecter', icon: 'mdi-logout', action: 'signOut' },
+            ],
 
             //
         }),
@@ -162,12 +196,21 @@
                     console.log(error);
                 }
             },
+            performAction(item) {
+                if (item.action === 'goTo') {
+                    this.goTo(item.params[0]);
+                    // corriger bug v tabs
+                  
+                } else if (item.action === 'signOut') {
+                    this.signOut();
+                }
+            },
         },
         computed: {
             ...mapState(['user']),
 
             routes() {
-                const userRole = this.user ? this.user.role : ''; // Obtenez le rôle de l'utilisateur ici, par exemple depuis le stockage local
+                const userRole = this.user && this.user.role ? this.user.role : ''; // Obtenez le rôle de l'utilisateur ici, par exemple depuis le stockage local
 
                 return this.$router.options.routes.filter((route) => {
                     if (
@@ -189,6 +232,6 @@
         color: #ffffff !important;
     }
     .routerLinkInactive {
-        color: #000000 !important;
+        color: #01352C !important;
     }
 </style>
