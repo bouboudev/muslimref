@@ -10,6 +10,7 @@
                 sm="8"
                 md="6"
             >
+            <Logo/>
                 <v-card class="pa-8">
                     <v-form
                         @submit.prevent="validate"
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+    import Logo from './templates/LogoTemplate.vue';
     import { mapActions } from 'vuex';
     // import { auth } from '../firebase';
     // import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -66,6 +68,9 @@
                 password: '',
             },
         }),
+        components: {
+            Logo,
+        },
 
         methods: {
             ...mapActions(['setUser']),

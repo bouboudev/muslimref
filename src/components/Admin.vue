@@ -13,6 +13,7 @@
                 md="10"
             >
                 <div class="d-flex justify-center">
+                    
                     <WidgetCardTemplate
                         type="number"
                         :title="users.length"
@@ -25,6 +26,13 @@
                         :title="usersSignaled.length"
                         :subtitle="usersSignaled.length > 1 ? 'Utilisateurs signalés' : 'Utilisateur signalé'"
                         colorCard="red darken-1"
+                        size="160"
+                    ></WidgetCardTemplate>
+                    <WidgetCardTemplate
+                        type="number"
+                        :title="totalProfil"
+                        subtitle="Total d'utilisateurs"
+                        colorCard="success darken-1"
                         size="160"
                     ></WidgetCardTemplate>
                 </div>
@@ -84,7 +92,7 @@
                 </v-card>
                 <v-card>
                     <v-card-title>
-                        Profiles signalés
+                        Utilisateurs signalés
                         <v-icon
                             class="mx-2 mb-2"
                             large
@@ -199,7 +207,7 @@
 
 <script>
     import { db } from '../firebase';
-    import { collection, onSnapshot, query } from 'firebase/firestore';
+    import { collection, onSnapshot, query, updateDoc, getDocs } from 'firebase/firestore';
     import { mapState } from 'vuex';
     import WidgetCardTemplate from './templates/WidgetCardTemplate.vue';
 
@@ -215,6 +223,8 @@
                     { text: 'email', value: 'email' },
                     { text: 'metier', value: 'job' },
                     { text: 'numero', value: 'number' },
+                    { text: 'localisation', value: 'location' },
+
                     { text: 'actions', value: 'actions' },
 
                     // { text: 'entreprise', value: 'entreprise' },
@@ -236,6 +246,7 @@
                 objet: {},
                 usersSignaled: [],
                 dialog: false,
+                totalProfil: 0,
             };
         },
         mounted() {
@@ -249,10 +260,13 @@
 
                 onSnapshot(q, (snapshot) => {
                     const newData = [];
+                    const totalProfil = [];
                     snapshot.forEach((doc) => {
                         //where profile is validated
                         if (doc.data().profilCompleted === false) newData.push(doc.data());
+                        if (doc.data().profilCompleted === true) totalProfil.push(doc.data());
                     });
+                    this.totalProfil = totalProfil.length;
                     this.users = newData;
                 });
             },
@@ -291,7 +305,27 @@
                 await this.$store.dispatch('deleteProfilFirebase', item);
                 this.dialog = false;
             },
+            // très dangereux permet d'ajouter un champ à tous les documents de la collection
+            async addFieldToAllDocuments() {
+                const informationsSheetRef = collection(db, 'informationsSheet');
+
+                try {
+                    const querySnapshot = await getDocs(informationsSheetRef);
+
+                    querySnapshot.forEach(async (doc) => {
+                        const docRef = doc.ref;
+                        await updateDoc(docRef, {
+                            acceptTerms: true,
+                        });
+                    });
+
+                    console.log('Champ "location" ajouté à tous les documents avec succès.');
+                } catch (error) {
+                    console.error('Une erreur s\'est produite lors de l\'ajout du champ "location" :', error);
+                }
+            },
         },
+
         computed: {
             ...mapState(['user']),
             //

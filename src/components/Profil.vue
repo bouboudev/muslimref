@@ -50,21 +50,16 @@
                             :disabled="cardIsDisabled"
                         >
                             <v-card-text>
-                                <div class=" d-flex justify-end">
-
-                                <v-card-subtitle>
-                                    Profil validé
-                                </v-card-subtitle>
-                                <v-icon
-                                    class="success--text"
-                                    v-if="user && user.profilCompleted"
-                                > 
-                                    mdi-check-circle
-                                    
-                                </v-icon>
+                                <div class="d-flex justify-end">
+                                    <v-card-subtitle> Profil validé </v-card-subtitle>
+                                    <v-icon
+                                        class="success--text"
+                                        v-if="user && user.profilCompleted"
+                                    >
+                                        mdi-check-circle
+                                    </v-icon>
                                 </div>
 
-                                
                                 <v-flex class="mb-4"> Mon profil d'utilisateur </v-flex>
                                 <!-- icon to disabled the card -->
                                 <v-text-field
@@ -91,15 +86,18 @@
                                     v-model="user.number"
                                     label="Numéro de téléphone"
                                 ></v-text-field>
-                                 <v-text-field
-                                 v-if="user.role === 'admin'"
-                                 disabled
+                                <!-- location -->
+                                <v-text-field
+                                    v-model="user.location"
+                                    label="Ville"
+                                ></v-text-field>
+                                <v-text-field
+                                    v-if="user.role === 'admin'"
+                                    disabled
                                     v-model="user.role"
                                     label="role"
                                 ></v-text-field>
                             </v-card-text>
-                            
-
                             <v-card-actions class="justify-center">
                                 <v-btn
                                     color="primary"
@@ -117,7 +115,6 @@
                                 @click="validateMyProfil()"
                                 :disabled="!formIsValid"
                             >
-                           
                                 <v-icon left>mdi-content-save</v-icon>
 
                                 Valider son profil

@@ -131,6 +131,7 @@ export default new Vuex.Store({
             commit('SET_USER', auth.currentUser);
         },
         async addInformationSheet({ commit }, details) {
+            console.log('details informations sheet', details);
             // Add a new document in collection "cities"
             await setDoc(doc(db, 'informationsSheet', auth.currentUser.uid), {
                 id: auth.currentUser.uid,
@@ -140,6 +141,8 @@ export default new Vuex.Store({
                 number: details.number,
                 job: details.job,
                 profilCompleted: details.profilCompleted ? details.profilCompleted : false,
+                location: details.location,
+                acceptTerms: details.acceptTerms,
             })
                 .then((docRef) => {
                     console.log('Fiche de renseignement ajoutée avec succès', docRef);
@@ -158,6 +161,8 @@ export default new Vuex.Store({
                 number: details.number,
                 job: details.job,
                 profilCompleted: details.profilCompleted ? details.profilCompleted : false,
+                location: details.location,
+                acceptTerms: details.acceptTerms,
             })
                 .then((docRef) => {
                     console.log('Profilvalidé avec succès', docRef);
@@ -268,6 +273,8 @@ export default new Vuex.Store({
                     console.error('Erreur lors du signalement du profil', error);
                 });
         },
+
+
     },
     modules: {},
 });
