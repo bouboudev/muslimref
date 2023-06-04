@@ -69,7 +69,6 @@
                                 cols="12"
                                 sm="6"
                             >
-                                {{ userSignaled }}
                             </v-col>
                         </v-row>
                     </v-container>

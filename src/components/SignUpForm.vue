@@ -44,7 +44,6 @@
                             required
                         ></v-text-field>
                         <!-- jobs list -->
-
                         <v-autocomplete
                             v-model="register_form.job"
                             :items="jobs"
@@ -60,8 +59,6 @@
                             label="Numéro de téléphone"
                             required
                         ></v-text-field>
-{{selectedLocation}}
-{{register_form}}
                         <v-autocomplete
                             v-model="selectedLocation"
                             :items="locations"
@@ -72,7 +69,7 @@
                             item-value="geonameId"
                             required
                         ></v-autocomplete>
-                   
+
                         <!-- mot de passe -->
                         <v-text-field
                             v-model="register_form.password"
@@ -96,21 +93,15 @@
                             v-model="dialog"
                             max-width="500px"
                         >
-                            <template  v-slot:activator="{ on }">
-                             
-
+                            <template v-slot:activator="{ on }">
                                 <v-checkbox
                                     v-model="acceptTerms"
                                     label="Accepter les conditions d'utilisation et la charte de confidentialité"
                                     required
                                     class="h6"
-                                    
-                                v-on="on"
-                                @click="dialog = true"
-                                   
-                                    
+                                    v-on="on"
+                                    @click="dialog = true"
                                 ></v-checkbox>
-                                
                             </template>
                             <v-card>
                                 <v-card-title>
@@ -282,15 +273,11 @@
                 console.log('Location selected:', this.selectedLocation);
             },
         },
-          watch: {
- 
-    'register_form.location': function (newSearch) {
-            this.fetchLocations(newSearch);
-
-    },
-
-
-  },
+        watch: {
+            'register_form.location': function (newSearch) {
+                this.fetchLocations(newSearch);
+            },
+        },
         computed: {
             passwordMatch() {
                 return this.register_form.password === this.confirmPassword;

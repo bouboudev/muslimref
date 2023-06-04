@@ -5,12 +5,34 @@
             align="center"
             style="height: 100vh"
         >
+            <!-- snackbar message-->
+            <v-snackbar
+                v-model="snackbar"
+                :timeout="timeout"
+                top
+                color="error"
+            >
+            {{ messageSnackbar }}
+
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                        color="white"
+                        text
+                        v-bind="attrs"
+                        @click="snackbar = false"
+                    >
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+
             <v-col
                 cols="12"
                 sm="8"
                 md="6"
             >
-            <Logo/>
+                <Logo />
+
                 <v-card class="pa-8">
                     <v-form
                         @submit.prevent="validate"
@@ -52,7 +74,6 @@
 
 <script>
     import Logo from './templates/LogoTemplate.vue';
-    import { mapActions } from 'vuex';
     // import { auth } from '../firebase';
     // import { signInWithEmailAndPassword } from 'firebase/auth';
     export default {
@@ -67,13 +88,14 @@
                 email: '',
                 password: '',
             },
+            snackbar: false,
+            timeout: 2000,
         }),
         components: {
             Logo,
         },
 
         methods: {
-            ...mapActions(['setUser']),
             // async validate() {
             //     try {
             //         await signInWithEmailAndPassword(auth, this.email, this.password);
@@ -92,12 +114,25 @@
             validate() {
                 this.$store.dispatch('login', this.login_form).catch((error) => {
                     console.log(error);
+                    // this.snackbar = true;
                 });
             },
             reset() {
                 this.$refs.form.reset();
             },
         },
+        computed: {
+            messageSnackbar() {
+                return this.$store.state.messageSnackbar;
+            },
+        },
+    watch: {
+  messageSnackbar(newData) {
+    if (newData) {
+      this.snackbar = true;
+    }
+  },
+},
     };
 </script>
 <style></style>

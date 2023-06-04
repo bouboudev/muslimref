@@ -23,6 +23,9 @@ export default new Vuex.Store({
         CLEAR_USER(state) {
             state.user = null;
         },
+        SET_MESSAGESNACKBAR(state, message) {
+            Vue.set(state, 'messageSnackbar', message);
+        },
         CONSOLE(hello) {
             console.log(' console du store :', hello);
         },
@@ -33,16 +36,22 @@ export default new Vuex.Store({
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
+                // commit('SET_MESSAGESNACKBAR', 'Vous êtes connecté');
             } catch (error) {
                 switch (error.code) {
                     case 'auth/user-not-found':
-                        alert('User not found');
+                        commit('SET_MESSAGESNACKBAR', 'Utilisateur non trouvé');
+                        // alert('User not found');
                         break;
                     case 'auth/wrong-password':
-                        alert('Wrong password');
+                        // SET_MESSAGESNACKBAR('Wrong password')
+                        commit('SET_MESSAGESNACKBAR', 'Mot de passe incorrect');
+                        // alert('Wrong password');
                         break;
                     default:
-                        alert('Something went wrong');
+                        // alert('Something went wrong');
+                        commit('SET_MESSAGESNACKBAR', 'Quelque chose s\'est mal passé');
+
                 }
 
                 return;

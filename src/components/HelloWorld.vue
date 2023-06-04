@@ -106,6 +106,9 @@
                     { text: 'email', value: 'email' },
                     { text: 'metier', value: 'job' },
                     { text: 'numero', value: 'number' },
+                    // location
+                    { text: 'localisation', value: 'location' },
+              
                     { text: 'actions', value: 'actions' },
 
                     // { text: 'entreprise', value: 'entreprise' },

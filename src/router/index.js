@@ -103,26 +103,49 @@ const router = new VueRouter({
 //     next();
 //   });
 
-// verifier le role l'utilisateur si il est admin ou pas
-router.beforeEach((to, from, next) => {
-    //lancer l'action du store getUser
-    store.dispatch('fetchUser');
-    //récupérer l'utilisateur connecté venant du store
+// // verifier le role l'utilisateur si il est admin ou pas
+// router.beforeEach((to, from, next) => {
+//     //lancer l'action du store getUser
+//     store.dispatch('fetchUser');
+//     //récupérer l'utilisateur connecté venant du store
+//     const user = store.state.user;
+//     //si l'utilisateur à le role admin
+//     if (to.matched.some((record) => record.meta.role === 'admin')) {
+//         //si l'utilisateur n'est pas admin
+//         if (user.role !== 'admin') {
+//             console.log('vous n\'avez pas les droits pour accéder à cette page');
+//             next('/');
+//             return;
+//         }
+//         else {
+//             console.log('vous avez les droits pour accéder à cette page', user);
+//         }
+//     }
+//     next();
+// });
+
+router.beforeEach(async (to, from, next) => {
+    // lancer l'action du store fetchUser et attendre qu'elle soit terminée
+    await store.dispatch('fetchUser');
+  
+    // récupérer l'utilisateur connecté venant du store
     const user = store.state.user;
-    //si l'utilisateur à le role admin
+  
+    // si l'utilisateur a le rôle admin
     if (to.matched.some((record) => record.meta.role === 'admin')) {
-        //si l'utilisateur n'est pas admin
-        if (user.role !== 'admin') {
-            console.log('vous n\'avez pas les droits pour accéder à cette page');
-            next('/');
-            return;
-        }
-        else {
-            console.log('vous avez les droits pour accéder à cette page', user);
-        }
+      // si l'utilisateur n'est pas admin
+      if (user.role !== 'admin') {
+        console.log("vous n'avez pas les droits pour accéder à cette page");
+        next('/');
+        return;
+      } else {
+        console.log("vous avez les droits pour accéder à cette page", user);
+      }
     }
+  
     next();
-});
+  });
+  
 
 
 
