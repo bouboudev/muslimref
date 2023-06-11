@@ -10,91 +10,119 @@
                 sm="8"
                 md="10"
             >
-            <div v-if=" user && user.profilCompleted">
-                
-                <v-card>
-                    <v-card-title>
-                        Liste des utilisateurs
-                        <v-spacer></v-spacer>
-                        <v-text-field
-                            v-model="search"
-                            append-icon="mdi-magnify"
-                            label="Rechercher"
-                            single-line
-                            hide-details
-                        ></v-text-field>
-                    </v-card-title>
-                    <v-data-table
-                        :headers="headers"
-                        :items="users"
-                        :items-per-page="10"
-                        class="elevation-0"
-                        :search="search"
-                        :loading="loading"
-                    >
-                        <!-- v slot action -->
-                        <template v-slot:[`item.actions`]="{ item }">
-                            <v-menu>
-                                <template v-slot:activator="{ on }">
-                                    <v-btn
-                                        icon
-                                        v-on="on"
-                                    >
-                                        <v-icon
-                                            color="grey_dark"
-                                            class="pointer"
-                                            >mdi-dots-vertical</v-icon
+                <div v-if="user && user.profilCompleted">
+                    <v-card>
+                        <v-card-title>
+                            Liste des utilisateurs
+                            <v-spacer></v-spacer>
+                            <v-text-field
+                                v-model="search"
+                                append-icon="mdi-magnify"
+                                label="Rechercher"
+                                single-line
+                                hide-details
+                            ></v-text-field>
+                        </v-card-title>
+                        <v-data-table
+                            :headers="headers"
+                            :items="users"
+                            :items-per-page="10"
+                            class="elevation-0"
+                            :search="search"
+                            :loading="loading"
+                        >
+                            <!-- v slot action -->
+                            <template v-slot:[`item.actions`]="{ item }">
+                                <v-menu>
+                                    <template v-slot:activator="{ on }">
+                                        <v-btn
+                                            icon
+                                            v-on="on"
                                         >
-                                    </v-btn>
-                                </template>
-                                <v-list dense>
-                                    <!-- consulter le profil -->
-                                    <v-list-item
-                                        class="pointer"
-                                        @click="goToProfil(item.id)"
-                                    >
-                                        <v-icon small>mdi-account-plus</v-icon>
-                                        <v-list-item-title>Consulter le profil</v-list-item-title>
-                                    </v-list-item>
-                                    <v-list-item
-                                        v-if="item.number"
-                                        class="pointer"
-                                        @click="copyElement(item.number)"
-                                    >
-                                    <v-icon small>mdi-phone</v-icon>
-                                        <v-list-item-title>copier le numero de téléphone</v-list-item-title>
-                                    </v-list-item>
-                                    <v-list-item
-                                    v-if="item.email"
-                                        class="pointer"
-                                        @click="copyElement(item.email)"
-                                    >
-                                    <v-icon small>mdi-mail</v-icon>
+                                            <v-icon
+                                                color="grey_dark"
+                                                class="pointer"
+                                                >mdi-dots-vertical</v-icon
+                                            >
+                                        </v-btn>
+                                    </template>
+                                    <v-list dense>
+                                        <!-- consulter le profil -->
+                                        <v-list-item
+                                            class="pointer"
+                                            @click="goToProfil(item.id)"
+                                        >
+                                            <v-icon small>mdi-account-plus</v-icon>
+                                            <v-list-item-title>Consulter le profil</v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item
+                                            v-if="item.number"
+                                            class="pointer"
+                                            @click="copyElement(item.number)"
+                                        >
+                                            <v-icon small>mdi-phone</v-icon>
+                                            <v-list-item-title>copier le numero de téléphone</v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item
+                                            v-if="item.email"
+                                            class="pointer"
+                                            @click="copyElement(item.email)"
+                                        >
+                                            <v-icon small>mdi-mail</v-icon>
 
-                                        <v-list-item-title>copier le mail</v-list-item-title>
-                                    </v-list-item>
-                                    <v-list-item
-                                        class="pointer"
-                                        @click="copyElement(item)"
-                                    >
-                                    <v-icon small>mdi-account</v-icon>
-                                        <v-list-item-title><signal :userSignaled="item"/></v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-menu>
+                                            <v-list-item-title>copier le mail</v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item
+                                            class="pointer"
+                                            @click="copyElement(item)"
+                                        >
+                                            <v-icon small>mdi-account</v-icon>
+                                            <v-list-item-title><signal :userSignaled="item" /></v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </template>
+                        </v-data-table>
+                    </v-card>
+
+                    <div class="mt-6">
+                        <v-row>
+                            <v-col
+                                v-for="user in displayedUsers"
+                                :key="user.id"
+                                cols="12"
+                                sm="6"
+                                md="4"
+                            >
+                                <ProfilCardWall
+                                    :user="user"
+                                    @click="goToProfil(user.id)"
+                                />
+                            </v-col>
                             
-                        </template>
-                    </v-data-table>
-                </v-card>
-            </div>
-            <div v-else class="text-center">
-                <v-card>
-                    <v-card-text class="headline">
-                        Votre profil doit etre validé par un administrateur pour acceder à la liste des utilisateurs.
-                    </v-card-text>
-                </v-card>
-
-            </div>
+                        </v-row>
+                        <v-row>
+                            <v-col>
+                                <v-pagination
+                                v-model="currentPage"
+                                :length="Math.ceil(users.length / itemsPerPage)"
+                                @input="onPageChange"
+                                color="primary"
+                            ></v-pagination>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </div>
+                <div
+                    v-else
+                    class="text-center"
+                >
+                    <v-card>
+                        <v-card-text class="headline">
+                            Votre profil doit etre validé par un administrateur pour acceder à la liste des utilisateurs.
+                        </v-card-text>
+                    </v-card>
+                </div>
             </v-col>
         </v-row>
     </v-container>
@@ -102,6 +130,7 @@
 
 <script>
     import signal from './Signal.vue';
+    import ProfilCardWall from './ProfilCardWall.vue';
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
     import { mapState } from 'vuex';
@@ -116,7 +145,7 @@
                     { text: 'Numero', value: 'number' },
                     // location
                     { text: 'Localisation', value: 'location' },
-              
+
                     { text: 'Actions', value: 'actions' },
 
                     // { text: 'entreprise', value: 'entreprise' },
@@ -125,10 +154,13 @@
                 users: [],
                 search: '',
                 loading: false,
+                currentPage: 1, // Page actuelle
+                itemsPerPage: 9, // Nombre d'éléments par page
             };
         },
         components: {
             signal,
+            ProfilCardWall,
         },
         mounted() {
             this.getFirestoreCollection();
@@ -158,10 +190,18 @@
             goToProfil(id) {
                 this.$router.push(`/profilWatch/${id}`);
             },
+            onPageChange(page) {
+                this.currentPage = page;
+            },
         },
         computed: {
             ...mapState(['user']),
             //
+            displayedUsers() {
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                return this.users.slice(startIndex, endIndex);
+            },
         },
     };
 </script>
