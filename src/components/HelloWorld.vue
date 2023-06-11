@@ -61,7 +61,7 @@
                                             @click="copyElement(item.number)"
                                         >
                                             <v-icon small>mdi-phone</v-icon>
-                                            <v-list-item-title>copier le numero de téléphone</v-list-item-title>
+                                            <v-list-item-title>Copier le numéro de téléphone</v-list-item-title>
                                         </v-list-item>
                                         <v-list-item
                                             v-if="item.email"
@@ -69,8 +69,7 @@
                                             @click="copyElement(item.email)"
                                         >
                                             <v-icon small>mdi-mail</v-icon>
-
-                                            <v-list-item-title>copier le mail</v-list-item-title>
+                                            <v-list-item-title>Copier l'e-mail</v-list-item-title>
                                         </v-list-item>
                                         <v-list-item
                                             class="pointer"
@@ -86,6 +85,12 @@
                     </v-card>
 
                     <div class="mt-6">
+                        <v-text-field
+                            v-model="searchTerm"
+                            label="Recherche"
+                            clearable
+                            @clear="searchTerm = ''"
+                        ></v-text-field>
                         <v-row>
                             <v-col
                                 v-for="user in displayedUsers"
@@ -99,16 +104,15 @@
                                     @click="goToProfil(user.id)"
                                 />
                             </v-col>
-                            
                         </v-row>
                         <v-row>
                             <v-col>
                                 <v-pagination
-                                v-model="currentPage"
-                                :length="Math.ceil(users.length / itemsPerPage)"
-                                @input="onPageChange"
-                                color="primary"
-                            ></v-pagination>
+                                    v-model="currentPage"
+                                    :length="Math.ceil(filteredUsers.length / itemsPerPage)"
+                                    @input="onPageChange"
+                                    color="primary"
+                                ></v-pagination>
                             </v-col>
                         </v-row>
                     </div>
@@ -119,7 +123,7 @@
                 >
                     <v-card>
                         <v-card-text class="headline">
-                            Votre profil doit etre validé par un administrateur pour acceder à la liste des utilisateurs.
+                            Votre profil doit être validé par un administrateur pour accéder à la liste des utilisateurs
                         </v-card-text>
                     </v-card>
                 </div>
@@ -127,13 +131,13 @@
         </v-row>
     </v-container>
 </template>
-
 <script>
     import signal from './Signal.vue';
     import ProfilCardWall from './ProfilCardWall.vue';
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
     import { mapState } from 'vuex';
+
     export default {
         data() {
             return {
@@ -145,9 +149,7 @@
                     { text: 'Numero', value: 'number' },
                     // location
                     { text: 'Localisation', value: 'location' },
-
                     { text: 'Actions', value: 'actions' },
-
                     // { text: 'entreprise', value: 'entreprise' },
                 ],
                 items: [],
@@ -156,6 +158,7 @@
                 loading: false,
                 currentPage: 1, // Page actuelle
                 itemsPerPage: 9, // Nombre d'éléments par page
+                searchTerm: '',
             };
         },
         components: {
@@ -196,11 +199,32 @@
         },
         computed: {
             ...mapState(['user']),
-            //
+            filteredUsers() {
+                const searchTerm = this.searchTerm ? this.searchTerm.toLowerCase() : '';
+                return this.users.filter((user) => {
+                    // Filtrez les utilisateurs en fonction des critères de recherche
+                    return (
+                        user.firstName.toLowerCase().includes(searchTerm) ||
+                        user.lastName.toLowerCase().includes(searchTerm) ||
+                        user.job.toLowerCase().includes(searchTerm)
+                    );
+                });
+            },
             displayedUsers() {
                 const startIndex = (this.currentPage - 1) * this.itemsPerPage;
                 const endIndex = startIndex + this.itemsPerPage;
-                return this.users.slice(startIndex, endIndex);
+
+                // Vérifier si une recherche est en cours
+                if (this.searchTerm) {
+                    // Retourner tous les utilisateurs sans pagination
+                    return this.filteredUsers;
+                } else {
+                    // Filtrer les utilisateurs en fonction des critères de recherche
+                    const filteredUsers = this.filteredUsers;
+
+                    // Paginer les résultats filtrés
+                    return filteredUsers.slice(startIndex, endIndex);
+                }
             },
         },
     };
