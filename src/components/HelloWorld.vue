@@ -27,10 +27,10 @@
                     <v-data-table
                         :headers="headers"
                         :items="users"
-                        :items-per-page="5"
+                        :items-per-page="10"
                         class="elevation-0"
                         :search="search"
-
+                        :loading="loading"
                     >
                         <!-- v slot action -->
                         <template v-slot:[`item.actions`]="{ item }">
@@ -48,6 +48,14 @@
                                     </v-btn>
                                 </template>
                                 <v-list dense>
+                                    <!-- consulter le profil -->
+                                    <v-list-item
+                                        class="pointer"
+                                        @click="goToProfil(item.id)"
+                                    >
+                                        <v-icon small>mdi-account-plus</v-icon>
+                                        <v-list-item-title>Consulter le profil</v-list-item-title>
+                                    </v-list-item>
                                     <v-list-item
                                         v-if="item.number"
                                         class="pointer"
@@ -101,21 +109,22 @@
         data() {
             return {
                 headers: [
-                    { text: 'nom', value: 'lastName' },
-                    { text: 'prenom', value: 'firstName' },
-                    { text: 'email', value: 'email' },
-                    { text: 'metier', value: 'job' },
-                    { text: 'numero', value: 'number' },
+                    { text: 'Nom', value: 'lastName' },
+                    { text: 'Prénom', value: 'firstName' },
+                    { text: 'Email', value: 'email' },
+                    { text: 'Metier', value: 'job' },
+                    { text: 'Numero', value: 'number' },
                     // location
-                    { text: 'localisation', value: 'location' },
+                    { text: 'Localisation', value: 'location' },
               
-                    { text: 'actions', value: 'actions' },
+                    { text: 'Actions', value: 'actions' },
 
                     // { text: 'entreprise', value: 'entreprise' },
                 ],
                 items: [],
                 users: [],
                 search: '',
+                loading: false,
             };
         },
         components: {
@@ -126,9 +135,11 @@
         },
         methods: {
             async getFirestoreCollection() {
+                this.loading = true;
                 const querySnapshot = await getDocs(collection(db, 'informationsSheet'));
                 querySnapshot.forEach((doc) => {
                     this.items.push(doc.data());
+                    this.loading = false;
                 });
                 this.checkProfilIsCompleted();
             },
@@ -143,6 +154,9 @@
                 //copy to clipboard
                 navigator.clipboard.writeText(item);
                 console.log('copied', item);
+            },
+            goToProfil(id) {
+                this.$router.push(`/profilWatch/${id}`);
             },
         },
         computed: {

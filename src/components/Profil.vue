@@ -29,7 +29,7 @@
                     >
                         Votre profil n'est pas encore validé, il le sera dans les plus brefs délais.
                     </v-alert>
-
+                    <!-- //TODO créer une description + une page profil pour acceder aux informations des autres utilisateurs -->
                     <v-card-actions class="justify-end">
                         <v-icon
                             icon
@@ -44,7 +44,7 @@
                         ref="form"
                         v-model="valid"
                         lazy-validation
-                    >
+                    > 
                         <v-card
                             class="pa-8"
                             :disabled="cardIsDisabled"

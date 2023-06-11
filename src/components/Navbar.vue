@@ -180,14 +180,12 @@
                     const q = query(collectionRef, where('canceled', '==', false));
                     onSnapshot(q, (querySnapshot) => {
                         this.numberOfItems = querySnapshot.size;
-                        console.log('profilesSignaledCount : ', this.numberOfItems);
 
                         this.totalOfItems = this.numberOfItems + this.numberOfItemsBis;
                     });
 
                     const collectionRefNew = collection(db, 'informationsSheet');
                     const qNew = query(collectionRefNew, where('profilCompleted', '==', false));
-                    console.log('qNew : ', qNew);
                     onSnapshot(qNew, (querySnapshot) => {
                         this.numberOfItemsBis = querySnapshot.size;
                         this.totalOfItems = this.numberOfItems + this.numberOfItemsBis;
@@ -220,7 +218,7 @@
                         return false; // Cacher la route si l'une des conditions est vraie
                     }
 
-                    return !route.meta.hideNavigation && route.name !== 'profil';
+                    return !route.meta.hideNavigation && route.name !== 'profil' && route.name !== 'profilWatch';
                 });
             },
         },

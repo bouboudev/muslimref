@@ -58,6 +58,16 @@ const routes = [
             requireRole : 'admin'
         },
     },
+    //profilWatch
+    {
+        path: '/profilWatch/:userId',
+        name: 'profilWatch',
+        nameFr: 'Profil de l\'utilisateur',
+        component: () => import(/* webpackChunkName: "about" */ '../views/ProfilWatchView.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ];
 
 const router = new VueRouter({

@@ -152,6 +152,7 @@ export default new Vuex.Store({
                 profilCompleted: details.profilCompleted ? details.profilCompleted : false,
                 location: details.location,
                 acceptTerms: details.acceptTerms,
+                role: details.role ? details.role : 'user',
             })
                 .then((docRef) => {
                     console.log('Fiche de renseignement ajoutée avec succès', docRef);
@@ -193,7 +194,7 @@ export default new Vuex.Store({
                 };
                 commit('SET_USER', userUpdated);
 
-                console.log('getInformationSheet :', userUpdated);
+                // console.log('getInformationSheet :', userUpdated);
             } else {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');
