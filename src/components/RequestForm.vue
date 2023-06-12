@@ -12,9 +12,14 @@
                 sm="8"
                 md="10"
             >
+                <!-- Tableau 1 -->
+                
+                <div
+                v-if="!isLoading1">
                 <v-card-title> <v-icon x-large> mdi-account-plus </v-icon> Mes demandes de connexion : </v-card-title>
-                <!-- data table -->
                 <v-data-table
+                    
+                
                     :headers="table1Headers"
                     :items="requests"
                     sort-by="calories"
@@ -62,6 +67,10 @@
                         </v-menu>
                     </template>
                 </v-data-table>
+                </div>
+
+
+                <v-skeleton-loader type="table" v-else></v-skeleton-loader>
             </v-col>
 
             <v-col
@@ -69,15 +78,21 @@
                 sm="8"
                 md="10"
             >
+            <div
+                v-if="!isLoading2">
+                <!-- Tableau 2 -->
                 <v-card-title> <v-icon x-large> mdi-account-check </v-icon> Mes connexions acceptées : </v-card-title>
 
                 <v-data-table
+                    
                     :headers="table2Headers"
                     :items="requestsAccepted"
                     sort-by="calories"
                     class="elevation-1"
                 >
                 </v-data-table>
+            </div>
+                <v-skeleton-loader type="table" v-else></v-skeleton-loader>
             </v-col>
 
             <v-col
@@ -85,6 +100,9 @@
                 sm="8"
                 md="10"
             >
+            <div
+                v-if="!isLoading3">
+                <!-- Tableau 3 -->
                 <v-card-title> <v-icon x-large> mdi-account-cancel </v-icon> Mes connexions refusées : </v-card-title>
 
                 <v-data-table
@@ -135,6 +153,8 @@
                         </v-menu>
                     </template>
                 </v-data-table>
+            </div>
+                <v-skeleton-loader type="table" v-else></v-skeleton-loader>
             </v-col>
         </v-row>
     </v-container>
@@ -147,6 +167,9 @@
     export default {
         data() {
             return {
+                isLoading1: true,
+                isLoading2: true,
+                isLoading3: true,
                 commonHeaders: [
                     { text: 'Nom', value: 'lastName' },
                     { text: 'Prénom', value: 'firstName' },
@@ -172,11 +195,14 @@
             this.loading = true;
             this.getAccessRequests();
             this.getAccessRequestsAccepted();
+            this.getAccessRequestsRejected();
         },
         methods: {
             goToProfil(id) {
                 this.$router.push(`/profilWatch/${id}`);
             },
+
+            //demandes
             async getAccessRequests() {
                 const targetUserId = this.$route.params.userId;
                 const targetUserProfileRef = doc(db, 'informationsSheet', targetUserId);
@@ -186,13 +212,20 @@
                     if (targetUserProfileData) {
                         const accessRequests = targetUserProfileData.requests;
                         this.requests = accessRequests;
-                        console.log('accessRequests', accessRequests);
+                        console.log('demandes :', accessRequests);
+                        this.isLoading1 = false;
                         return accessRequests || [];
                     } else {
                         return [];
                     }
                 }
+                 else {
+                    console.log('demandes acceptées :', []);
+                    this.isLoading1 = false;
+                    return [];
+                }
             },
+            //demandes acceptées
             async getAccessRequestsAccepted() {
                 const targetUserId = this.$route.params.userId;
                 const targetUserProfileRef = doc(db, 'informationsSheet', targetUserId);
@@ -206,13 +239,51 @@
                     if (targetUserProfileData) {
                         const accessRequests = targetUserProfileData.requestsAccepted;
                         this.requestsAccepted = accessRequests;
-                        console.log('accessRequests', accessRequests);
+                        console.log('demandes acceptées :', accessRequests);
+                        this.isLoading2 = false;
                         return accessRequests || [];
                     } else {
+                        this.isLoading2 = false;
+
+                        return [];
+                    }
+                    
+                }
+                 else {
+                    console.log('demandes acceptées :', []);
+                    this.isLoading2 = false;
+                    return [];
+                }
+            },
+            //demandes refusées
+            async getAccessRequestsRejected() {
+                const targetUserId = this.$route.params.userId;
+                const targetUserProfileRef = doc(db, 'informationsSheet', targetUserId);
+                const targetUserProfileSnapshot = await getDoc(targetUserProfileRef);
+                const targetUserProfileData = targetUserProfileSnapshot.data();
+                if (
+                    targetUserProfileData &&
+                    targetUserProfileData.requestsRejected &&
+                    Array.isArray(targetUserProfileData.requestsRejected)
+                ) {
+                    if (targetUserProfileData) {
+                        const accessRequests = targetUserProfileData.requestsAccepted;
+                        this.requestsRejected = accessRequests;
+                        console.log('demandes refusées :', accessRequests);
+                        this.isLoading3 = false;
+                        return accessRequests || [];
+                    } else {
+                        this.isLoading3 = false;
                         return [];
                     }
                 }
+                else {
+                    console.log('demandes refusées :', []);
+                    this.isLoading3 = false;
+                    return [];
+                }
             },
+            //accepter la demande
             async acceptAccessRequest(item) {
                 const userId = this.$route.params.userId;
 
@@ -246,6 +317,7 @@
                     console.warn("La demande d'accès n'existe pas ou a déjà été traitée");
                 }
             },
+            //refuser la demande
             async rejectAccessRequest(item) {
                 const userId = this.$route.params.userId;
 
@@ -263,7 +335,7 @@
                         // Supprimer l'objet demandeur de la liste des demandes
                         await updateDoc(targetUserProfileRef, {
                             requests: arrayRemove(requester),
-                            utilisateursRefuses: arrayUnion(requester),
+                            requestsRejected: arrayUnion(requester),
                         });
                     } catch (error) {
                         console.error('Erreur lors du refus de la demande ', error);
