@@ -12,10 +12,10 @@
                 sm="8"
                 md="10"
             >
-                <v-card-title>  <v-icon x-large >  mdi-account-plus </v-icon> Mes demandes de connexion : </v-card-title>
+                <v-card-title> <v-icon x-large> mdi-account-plus </v-icon> Mes demandes de connexion : </v-card-title>
                 <!-- data table -->
                 <v-data-table
-                    :headers="headers"
+                    :headers="table1Headers"
                     :items="requests"
                     sort-by="calories"
                     class="elevation-1"
@@ -69,57 +69,14 @@
                 sm="8"
                 md="10"
             >
-                <!-- v-icon connexion accepted -->
-
-                <v-card-title> <v-icon x-large > mdi-account-check </v-icon> Mes connexions acceptées : </v-card-title>
+                <v-card-title> <v-icon x-large> mdi-account-check </v-icon> Mes connexions acceptées : </v-card-title>
 
                 <v-data-table
-                    :headers="headers"
+                    :headers="table2Headers"
                     :items="requestsAccepted"
                     sort-by="calories"
                     class="elevation-1"
                 >
-                    <!-- v slot action -->
-                    <template v-slot:[`item.actions`]="{ item }">
-                        <v-menu>
-                            <template v-slot:activator="{ on }">
-                                <v-btn
-                                    icon
-                                    v-on="on"
-                                >
-                                    <v-icon
-                                        color="grey_dark"
-                                        class="pointer"
-                                        >mdi-dots-vertical</v-icon
-                                    >
-                                </v-btn>
-                            </template>
-                            <v-list dense>
-                                <!-- consulter le profil -->
-                                <v-list-item
-                                    class="pointer"
-                                    @click="goToProfil(item.id)"
-                                >
-                                    <v-icon small>mdi-account-plus</v-icon>
-                                    <v-list-item-title>Consulter le profil</v-list-item-title>
-                                </v-list-item>
-                                <v-list-item
-                                    class="pointer"
-                                    @click="acceptAccessRequest(item)"
-                                >
-                                    <v-icon small>mdi-check</v-icon>
-                                    <v-list-item-title>Accepter la demande</v-list-item-title>
-                                </v-list-item>
-                                <v-list-item
-                                    class="pointer"
-                                    @click="rejectAccessRequest(item)"
-                                >
-                                    <v-icon small>mdi-close</v-icon>
-                                    <v-list-item-title>Refuser la demande</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </template>
                 </v-data-table>
             </v-col>
 
@@ -128,10 +85,10 @@
                 sm="8"
                 md="10"
             >
-                <v-card-title>  <v-icon x-large > mdi-account-cancel </v-icon> Mes connexions refusées : </v-card-title>
+                <v-card-title> <v-icon x-large> mdi-account-cancel </v-icon> Mes connexions refusées : </v-card-title>
 
                 <v-data-table
-                    :headers="headers"
+                    :headers="table3Headers"
                     :items="requestsRejected"
                     sort-by="calories"
                     class="elevation-1"
@@ -190,18 +147,26 @@
     export default {
         data() {
             return {
-                headers: [
+                commonHeaders: [
                     { text: 'Nom', value: 'lastName' },
                     { text: 'Prénom', value: 'firstName' },
                     { text: 'Metier', value: 'job' },
-                    { text: 'Actions', value: 'actions' },
                 ],
+                table1Headers: [],
+                table2Headers: [],
+                table3Headers: [],
                 requests: [],
                 requestsAccepted: [],
                 requestsRejected: [],
 
                 loading: false,
             };
+        },
+        created() {
+            // Initialisation des en-têtes pour chaque table
+            this.table1Headers = [...this.commonHeaders, { text: 'Actions', value: 'actions' }];
+            this.table2Headers = [...this.commonHeaders];
+            this.table3Headers = [...this.commonHeaders];
         },
         mounted() {
             this.loading = true;
