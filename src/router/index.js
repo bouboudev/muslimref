@@ -68,6 +68,16 @@ const routes = [
             requiresAuth: true,
         },
     },
+    //request
+    {
+        path: '/request/:userId',
+        name: 'request',
+        nameFr: 'Demande',
+        component: () => import(/* webpackChunkName: "about" */ '../views/RequestView.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ];
 
 const router = new VueRouter({

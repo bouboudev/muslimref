@@ -97,7 +97,7 @@
 
                         try {
                             await updateDoc(targetUserProfileRef, {
-                                demandes: arrayUnion(currentUserId),
+                                requests: arrayUnion({id : currentUserId, firstName : currentUser.firstName , lastName :currentUser.lastName, job : currentUser.job}),
                             });
                             console.log("Demande d'accès envoyée avec succès");
 
@@ -131,8 +131,8 @@
 
                         // Vérifier si l'utilisateur connecté a déjà envoyé une demande d'accès à l'utilisateur cible
 
-                        if (targetUserProfile && targetUserProfile.demandes && Array.isArray(targetUserProfile.demandes)) {
-                            if (targetUserProfile.demandes.includes(currentUserId)) {
+                        if (targetUserProfile && targetUserProfile.requests && Array.isArray(targetUserProfile.requests)) {
+                            if (targetUserProfile.requests.includes(currentUserId)) {
                                 console.log('Demande déjà envoyée');
                                 return true;
                             } else {

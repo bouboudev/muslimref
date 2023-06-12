@@ -10,129 +10,108 @@
                 sm="8"
                 md="10"
             >
-                <div v-if="user && user.profilCompleted">
-                    <v-card>
-                        <v-card-title>
-                            Liste des utilisateurs
-                            <v-spacer></v-spacer>
-                            <v-text-field
-                                v-model="search"
-                                append-icon="mdi-magnify"
-                                label="Rechercher"
-                                single-line
-                                hide-details
-                            ></v-text-field>
-                        </v-card-title>
-                        <v-data-table
-                            :headers="headers"
-                            :items="users"
-                            :items-per-page="10"
-                            class="elevation-0"
-                            :search="search"
-                            :loading="loading"
-                        >
-                            <!-- v slot action -->
-                            <template v-slot:[`item.actions`]="{ item }">
-                                <v-menu>
-                                    <template v-slot:activator="{ on }">
-                                        <v-btn
-                                            icon
-                                            v-on="on"
-                                        >
-                                            <v-icon
-                                                color="grey_dark"
-                                                class="pointer"
-                                                >mdi-dots-vertical</v-icon
-                                            >
-                                        </v-btn>
-                                    </template>
-                                    <v-list dense>
-                                        <!-- consulter le profil -->
-                                        <v-list-item
-                                            class="pointer"
-                                            @click="goToProfil(item.id)"
-                                        >
-                                            <v-icon small>mdi-account-plus</v-icon>
-                                            <v-list-item-title>Consulter le profil</v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item
-                                            v-if="item.number"
-                                            class="pointer"
-                                            @click="copyElement(item.number)"
-                                        >
-                                            <v-icon small>mdi-phone</v-icon>
-                                            <v-list-item-title>Copier le numéro de téléphone</v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item
-                                            v-if="item.email"
-                                            class="pointer"
-                                            @click="copyElement(item.email)"
-                                        >
-                                            <v-icon small>mdi-mail</v-icon>
-                                            <v-list-item-title>Copier l'e-mail</v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item
-                                            class="pointer"
-                                            @click="copyElement(item)"
-                                        >
-                                            <v-icon small>mdi-account</v-icon>
-                                            <v-list-item-title><signal :userSignaled="item" /></v-list-item-title>
-                                        </v-list-item>
-                                    </v-list>
-                                </v-menu>
-                            </template>
-                        </v-data-table>
-                    </v-card>
-
-                    <div class="mt-6">
-                        <v-text-field
-                            v-model="searchTerm"
-                            label="Recherche"
-                            clearable
-                            @clear="searchTerm = ''"
-                        ></v-text-field>
+                <div v-if="loading">
+                    <div>
                         <v-row>
                             <v-col
-                                v-for="user in displayedUsers"
-                                :key="user.id"
                                 cols="12"
-                                sm="6"
-                                md="4"
+                                sm="4"
+                                v-for="n in 3"
+                                :key="n"
                             >
-                                <ProfilCardWall
-                                    :user="user"
-                                    @click="goToProfil(user.id)"
-                                />
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col>
-                                <v-pagination
-                                    v-model="currentPage"
-                                    :length="Math.ceil(filteredUsers.length / itemsPerPage)"
-                                    @input="onPageChange"
-                                    color="primary"
-                                ></v-pagination>
+                                <v-skeleton-loader
+                                    type="avatar, list-item-three-line, actions"
+                                    class="ma-4"
+                                ></v-skeleton-loader>
                             </v-col>
                         </v-row>
                     </div>
                 </div>
-                <div
-                    v-else
-                    class="text-center"
-                >
-                    <v-card>
-                        <v-card-text class="headline">
-                            Votre profil doit être validé par un administrateur pour accéder à la liste des utilisateurs
-                        </v-card-text>
-                    </v-card>
+                <div v-else>
+                    <div v-if="user && user.profilCompleted">
+                        <v-card
+                            :loading="loading"
+                            class="pa-5"
+                        >
+                            <template slot="progress">
+                                <v-row
+                                    justify="center"
+                                    align="center"
+                                    style="height: 100%"
+                                >
+                                    <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                    >
+                                        <v-progress-circular
+                                            indeterminate
+                                            size="100"
+                                            width="10"
+                                            color="primary"
+                                        ></v-progress-circular>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                            <v-card-title v-if="user">
+                                Liste des utilisateurs
+                                <v-spacer></v-spacer>
+                                <v-text-field
+                                    v-model="searchTerm"
+                                    append-icon="mdi-magnify"
+                                    single-line
+                                    hide-details
+                                    label="Recherche"
+                                    clearable
+                                    @clear="searchTerm = ''"
+                                ></v-text-field>
+                            </v-card-title>
+
+                            <div class="mt-6">
+                                <v-row>
+                                    <v-col
+                                        v-for="user in displayedUsers"
+                                        :key="user.id"
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                    >
+                                        <ProfilCardWall
+                                            :user="user"
+                                            @click="goToProfil(user.id)"
+                                        />
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col>
+                                        <v-pagination
+                                            v-if="user"
+                                            v-model="currentPage"
+                                            :length="Math.ceil(filteredUsers.length / itemsPerPage)"
+                                            @input="onPageChange"
+                                            color="navbarBackground"
+                                        ></v-pagination>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                        </v-card>
+                    </div>
+                    <div
+                        class="text-center"
+                        v-else
+                    >
+                        <v-card>
+                            <v-card-text class="headline">
+                                Votre profil doit être validé par un administrateur pour accéder à la liste des utilisateurs
+                            </v-card-text>
+                        </v-card>
+                    </div>
                 </div>
             </v-col>
         </v-row>
     </v-container>
 </template>
 <script>
-    import signal from './Signal.vue';
     import ProfilCardWall from './ProfilCardWall.vue';
     import { db } from '../firebase';
     import { collection, getDocs } from 'firebase/firestore';
@@ -162,7 +141,6 @@
             };
         },
         components: {
-            signal,
             ProfilCardWall,
         },
         mounted() {
